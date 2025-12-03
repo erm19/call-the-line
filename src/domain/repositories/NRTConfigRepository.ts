@@ -7,7 +7,7 @@ import { LatencyMetrics } from '../entities/LatencyMetrics';
  * NRT Config Repository Interface
  * Defines contract for NRT configuration and metrics data access
  */
-export interface NRTConfigRepository {
+export interface INRTConfigRepository {
   /**
    * Gets current NRT configuration
    */

@@ -6,7 +6,7 @@ import { Clip } from '../entities/Clip';
  * Clip Repository Interface
  * Defines contract for clip data access
  */
-export interface ClipRepository {
+export interface IClipRepository {
   /**
    * Creates a new clip
    */

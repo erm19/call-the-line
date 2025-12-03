@@ -1,7 +1,7 @@
 import { Result, success, failure } from '@core/utils/result';
 import { NotFoundError, StorageError } from '@core/errors/AppError';
 import { Clip } from '@domain/entities/Clip';
-import { ClipRepository } from '@domain/repositories/ClipRepository';
+import { IClipRepository } from '@domain/repositories/ClipRepository';
 import { ClipLocalDataSource } from '../datasources/local/ClipLocalDataSource';
 import { clipFromDTO, clipToDTO } from '../mappers/clipMapper';
 import { getCurrentISOString } from '@core/utils/date';
@@ -9,7 +9,7 @@ import { getCurrentISOString } from '@core/utils/date';
 /**
  * Clip Repository Implementation
  */
-export class ClipRepositoryImpl implements ClipRepository {
+export class ClipRepository implements IClipRepository {
   constructor(private readonly localDataSource: ClipLocalDataSource) {}
 
   async create(clip: Omit<Clip, 'id' | 'createdAt' | 'updatedAt'>): Promise<Result<Clip, StorageError>> {

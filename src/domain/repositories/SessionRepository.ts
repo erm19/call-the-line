@@ -6,7 +6,7 @@ import { Session } from '../entities/Session';
  * Session Repository Interface
  * Defines contract for session data access
  */
-export interface SessionRepository {
+export interface ISessionRepository {
   /**
    * Creates a new session
    */

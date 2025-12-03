@@ -1,7 +1,7 @@
 import { Result, success, failure } from '@core/utils/result';
 import { NotFoundError, StorageError } from '@core/errors/AppError';
 import { Session, SessionStatus } from '@domain/entities/Session';
-import { SessionRepository } from '@domain/repositories/SessionRepository';
+import { ISessionRepository } from '@domain/repositories/SessionRepository';
 import { SessionLocalDataSource } from '../datasources/local/SessionLocalDataSource';
 import { sessionFromDTO, sessionToDTO } from '../mappers/sessionMapper';
 import { getCurrentISOString } from '@core/utils/date';
@@ -9,7 +9,7 @@ import { getCurrentISOString } from '@core/utils/date';
 /**
  * Session Repository Implementation
  */
-export class SessionRepositoryImpl implements SessionRepository {
+export class SessionRepository implements ISessionRepository {
   constructor(private readonly localDataSource: SessionLocalDataSource) {}
 
   async create(

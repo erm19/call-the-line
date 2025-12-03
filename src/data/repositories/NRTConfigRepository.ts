@@ -2,14 +2,14 @@ import { Result, success, failure } from '@core/utils/result';
 import { StorageError } from '@core/errors/AppError';
 import { NRTConfig } from '@domain/entities/NRTConfig';
 import { LatencyMetrics } from '@domain/entities/LatencyMetrics';
-import { NRTConfigRepository } from '@domain/repositories/NRTConfigRepository';
+import { INRTConfigRepository } from '@domain/repositories/NRTConfigRepository';
 import { NRTConfigLocalDataSource } from '../datasources/local/NRTConfigLocalDataSource';
 import { nrtConfigFromDTO, nrtConfigToDTO } from '../mappers/nrtConfigMapper';
 
 /**
  * NRT Config Repository Implementation
  */
-export class NRTConfigRepositoryImpl implements NRTConfigRepository {
+export class NRTConfigRepository implements INRTConfigRepository {
   constructor(private readonly localDataSource: NRTConfigLocalDataSource) {}
 
   async getConfig(): Promise<Result<NRTConfig, StorageError>> {
