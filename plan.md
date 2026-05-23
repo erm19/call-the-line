@@ -120,12 +120,14 @@ Goal: user can submit a recorded clip and see the AI line call result.
 
 Goal: live ball tracking with sub-500ms in/out calls during play.
 
+- [ ] **5.0a** Install `react-native-fast-tflite`; add placeholder `.tflite` ball-detection model to `assets/models/`; configure Metro to resolve `.tflite` files
+- [ ] **5.0b** Create `TFLiteInferenceService` platform service — loads model from assets at startup, exposes `runInference(frame): InferenceResult` synchronously within 250ms; register in DI
 - [ ] **5.1** Add NRT feature flag — `NRT_ENABLED` constant, check before entering NRT path
-- [ ] **5.2** Implement `NRTCameraService` — 60fps frame stream via vision-camera frame processor
+- [ ] **5.2** Implement `NRTCameraService` — 60fps frame stream via vision-camera frame processor; pipe raw frames directly into `TFLiteInferenceService` to avoid copy overhead
 - [ ] **5.3** Implement rolling frame buffer — keep last 3 seconds, O(1) insert/evict
-- [ ] **5.4** Implement `RunNRTDecisionPipeline` use case body — orchestrate frame selection, inference call, decision
+- [ ] **5.4** Implement `RunNRTDecisionPipeline` use case body — orchestrate frame selection, `TFLiteInferenceService` call, decision
 - [ ] **5.5** Implement bounce detection heuristic — analyze trajectory from frame sequence
-- [ ] **5.6** Implement on-device inference path — TFLite model stub or edge API call within 250ms budget
+- [ ] **5.6** Implement model hot-swap — `TFLiteInferenceService` can reload a new `.tflite` file from local storage without restarting the pipeline; enables model updates without app release
 - [ ] **5.7** Add latency instrumentation — timestamp each pipeline stage, populate `LatencyMetrics`
 - [ ] **5.8** Implement `StartLiveTracking` use case body — configure NRTCameraService, start pipeline
 - [ ] **5.9** Implement `StopLiveTracking` use case body — flush buffer, stop camera, persist metrics
@@ -173,7 +175,6 @@ Goal: test coverage for all critical paths.
 
 ## Deferred / Future
 
-- TFLite on-device model (replace API call for NRT inference)
 - Cloud sync (session backup and cross-device)
 - Multi-camera angle support
 - Real-time collaboration (shared session view)
