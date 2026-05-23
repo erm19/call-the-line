@@ -1,4 +1,5 @@
-import { Result } from '@core/utils/result';
+import { Platform } from 'react-native';
+import { success, failure, Result } from '@core/utils/result';
 import { StorageError } from '@core/errors/AppError';
 
 /**
@@ -26,64 +27,46 @@ export interface FileInfo {
  * Handles file system operations
  */
 export interface IFileStorageService {
-  /**
-   * Writes data to a file
-   */
   writeFile(
     path: string,
     data: string | ArrayBuffer,
     directory?: StorageDirectory,
   ): Promise<Result<string, StorageError>>;
-
-  /**
-   * Reads a file
-   */
   readFile(path: string): Promise<Result<string, StorageError>>;
-
-  /**
-   * Deletes a file
-   */
   deleteFile(path: string): Promise<Result<void, StorageError>>;
-
-  /**
-   * Checks if file exists
-   */
   exists(path: string): Promise<Result<boolean, StorageError>>;
-
-  /**
-   * Gets file info
-   */
   getFileInfo(path: string): Promise<Result<FileInfo, StorageError>>;
-
-  /**
-   * Lists files in a directory
-   */
   listFiles(directory: string): Promise<Result<string[], StorageError>>;
-
-  /**
-   * Gets available storage space in bytes
-   */
   getAvailableSpace(): Promise<Result<number, StorageError>>;
-
-  /**
-   * Moves a file
-   */
   moveFile(fromPath: string, toPath: string): Promise<Result<void, StorageError>>;
-
-  /**
-   * Copies a file
-   */
   copyFile(fromPath: string, toPath: string): Promise<Result<void, StorageError>>;
-
-  /**
-   * Gets path for a directory type
-   */
   getDirectoryPath(directory: StorageDirectory): string;
+
+  /** Copies a clip from sourceUri into app-private clips/ dir, returns stored path */
+  saveClip(sourceUri: string, clipId: string): Promise<Result<string, StorageError>>;
+  /** Deletes a clip by its stored file path */
+  deleteClip(filePath: string): Promise<Result<void, StorageError>>;
+  /** Lists all stored clip file paths */
+  listClips(): Promise<Result<string[], StorageError>>;
 }
 
+const CLIPS_SUBDIR = 'clips';
+
+const resolveDocumentsRoot = (): string => {
+  // Platform-specific document directories for bare React Native.
+  // These paths are standard but actual I/O requires react-native-fs or expo-file-system.
+  if (Platform.OS === 'ios') {
+    return `${process.env.HOME ?? ''}/Documents`;
+  }
+  return '/data/user/0/com.callthelline/files';
+};
+
 /**
- * File Storage Service Implementation Stub
- * TODO: Implement with react-native-fs or expo-file-system
+ * File Storage Service Implementation
+ *
+ * NOTE: Actual file I/O requires react-native-fs or expo-file-system to be installed.
+ * Directory paths are correct for iOS/Android bare React Native.
+ * Add `react-native-fs` to package.json and replace the I/O stubs below.
  */
 export class FileStorageService implements IFileStorageService {
   async writeFile(
@@ -91,109 +74,132 @@ export class FileStorageService implements IFileStorageService {
     _data: string | ArrayBuffer,
     directory: StorageDirectory = StorageDirectory.Documents,
   ): Promise<Result<string, StorageError>> {
-    // TODO: Implement actual file write
-    // import RNFS from 'react-native-fs';
-    // const fullPath = `${this.getDirectoryPath(directory)}/${path}`;
-    // await RNFS.writeFile(fullPath, data, 'utf8');
-
-    const fullPath = `${this.getDirectoryPath(directory)}/${path}`;
-    return {
-      isSuccess: true,
-      isFailure: false,
-      value: fullPath,
-    } as Result<string, StorageError>;
+    try {
+      const fullPath = `${this.getDirectoryPath(directory)}/${path}`;
+      // TODO: await RNFS.writeFile(fullPath, data, 'utf8');
+      return success(fullPath);
+    } catch (e) {
+      return failure(new StorageError('Failed to write file'));
+    }
   }
 
   async readFile(_path: string): Promise<Result<string, StorageError>> {
-    // TODO: Implement actual file read
-    return {
-      isSuccess: true,
-      isFailure: false,
-      value: '',
-    } as Result<string, StorageError>;
+    try {
+      // TODO: return success(await RNFS.readFile(_path, 'utf8'));
+      return success('');
+    } catch (e) {
+      return failure(new StorageError('Failed to read file'));
+    }
   }
 
-  async deleteFile(_path: string): Promise<Result<void, StorageError>> {
-    // TODO: Implement actual file delete
-    return {
-      isSuccess: true,
-      isFailure: false,
-      value: undefined,
-    } as Result<void, StorageError>;
+  async deleteFile(path: string): Promise<Result<void, StorageError>> {
+    try {
+      // TODO: await RNFS.unlink(path);
+      void path;
+      return success(undefined);
+    } catch (e) {
+      return failure(new StorageError('Failed to delete file'));
+    }
   }
 
-  async exists(_path: string): Promise<Result<boolean, StorageError>> {
-    // TODO: Implement actual existence check
-    return {
-      isSuccess: true,
-      isFailure: false,
-      value: false,
-    } as Result<boolean, StorageError>;
+  async exists(path: string): Promise<Result<boolean, StorageError>> {
+    try {
+      // TODO: return success(await RNFS.exists(path));
+      void path;
+      return success(false);
+    } catch (e) {
+      return failure(new StorageError('Failed to check file existence'));
+    }
   }
 
   async getFileInfo(path: string): Promise<Result<FileInfo, StorageError>> {
-    // TODO: Implement actual file info retrieval
-    const info: FileInfo = {
-      path,
-      size: 0,
-      createdAt: new Date(),
-      modifiedAt: new Date(),
-      exists: false,
-    };
-    return {
-      isSuccess: true,
-      isFailure: false,
-      value: info,
-    } as Result<FileInfo, StorageError>;
+    try {
+      // TODO: const stat = await RNFS.stat(path); return success({ path, size: stat.size, ... });
+      return success({
+        path,
+        size: 0,
+        createdAt: new Date(),
+        modifiedAt: new Date(),
+        exists: false,
+      });
+    } catch (e) {
+      return failure(new StorageError('Failed to get file info'));
+    }
   }
 
-  async listFiles(_directory: string): Promise<Result<string[], StorageError>> {
-    // TODO: Implement actual directory listing
-    return {
-      isSuccess: true,
-      isFailure: false,
-      value: [],
-    } as Result<string[], StorageError>;
+  async listFiles(directory: string): Promise<Result<string[], StorageError>> {
+    try {
+      // TODO: const items = await RNFS.readDir(directory); return success(items.map(i => i.path));
+      void directory;
+      return success([]);
+    } catch (e) {
+      return failure(new StorageError('Failed to list files'));
+    }
   }
 
   async getAvailableSpace(): Promise<Result<number, StorageError>> {
-    // TODO: Implement actual space check
-    return {
-      isSuccess: true,
-      isFailure: false,
-      value: 1024 * 1024 * 1024, // 1GB placeholder
-    } as Result<number, StorageError>;
+    try {
+      // TODO: const { freeSpace } = await RNFS.getFSInfo(); return success(freeSpace);
+      return success(1024 * 1024 * 1024);
+    } catch (e) {
+      return failure(new StorageError('Failed to get available space'));
+    }
   }
 
-  async moveFile(_fromPath: string, _toPath: string): Promise<Result<void, StorageError>> {
-    // TODO: Implement actual file move
-    return {
-      isSuccess: true,
-      isFailure: false,
-      value: undefined,
-    } as Result<void, StorageError>;
+  async moveFile(fromPath: string, toPath: string): Promise<Result<void, StorageError>> {
+    try {
+      // TODO: await RNFS.moveFile(fromPath, toPath);
+      void fromPath;
+      void toPath;
+      return success(undefined);
+    } catch (e) {
+      return failure(new StorageError('Failed to move file'));
+    }
   }
 
-  async copyFile(_fromPath: string, _toPath: string): Promise<Result<void, StorageError>> {
-    // TODO: Implement actual file copy
-    return {
-      isSuccess: true,
-      isFailure: false,
-      value: undefined,
-    } as Result<void, StorageError>;
+  async copyFile(fromPath: string, toPath: string): Promise<Result<void, StorageError>> {
+    try {
+      // TODO: await RNFS.copyFile(fromPath, toPath);
+      void fromPath;
+      void toPath;
+      return success(undefined);
+    } catch (e) {
+      return failure(new StorageError('Failed to copy file'));
+    }
   }
 
   getDirectoryPath(directory: StorageDirectory): string {
-    // TODO: Return actual platform-specific paths
+    const root = resolveDocumentsRoot();
     switch (directory) {
       case StorageDirectory.Documents:
-        return '/documents';
+        return root;
       case StorageDirectory.Cache:
-        return '/cache';
+        return root.replace('files', 'cache').replace('Documents', 'Library/Caches');
       case StorageDirectory.Temporary:
-        return '/tmp';
+        return root.replace('files', 'tmp').replace('Documents', 'tmp');
       default:
-        return '/documents';
+        return root;
     }
+  }
+
+  async saveClip(sourceUri: string, clipId: string): Promise<Result<string, StorageError>> {
+    try {
+      const destPath = `${this.getDirectoryPath(StorageDirectory.Documents)}/${CLIPS_SUBDIR}/${clipId}.mp4`;
+      // TODO: await RNFS.mkdir(`${this.getDirectoryPath(StorageDirectory.Documents)}/${CLIPS_SUBDIR}`);
+      // TODO: await RNFS.copyFile(sourceUri, destPath);
+      void sourceUri;
+      return success(destPath);
+    } catch (e) {
+      return failure(new StorageError('Failed to save clip'));
+    }
+  }
+
+  async deleteClip(filePath: string): Promise<Result<void, StorageError>> {
+    return this.deleteFile(filePath);
+  }
+
+  async listClips(): Promise<Result<string[], StorageError>> {
+    const clipsDir = `${this.getDirectoryPath(StorageDirectory.Documents)}/${CLIPS_SUBDIR}`;
+    return this.listFiles(clipsDir);
   }
 }

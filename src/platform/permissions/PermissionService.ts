@@ -1,4 +1,6 @@
-import { Result } from '@core/utils/result';
+import { Linking } from 'react-native';
+import { Camera } from 'react-native-vision-camera';
+import { success, failure, Result } from '@core/utils/result';
 import { PermissionError } from '@core/errors/AppError';
 
 /**
@@ -25,93 +27,98 @@ export enum PermissionStatus {
  * Handles permission requests and status checks
  */
 export interface IPermissionService {
-  /**
-   * Checks current permission status
-   */
   checkPermission(permission: Permission): Promise<Result<PermissionStatus, PermissionError>>;
-
-  /**
-   * Requests a permission
-   */
   requestPermission(permission: Permission): Promise<Result<PermissionStatus, PermissionError>>;
-
-  /**
-   * Requests multiple permissions
-   */
   requestPermissions(
     permissions: Permission[],
   ): Promise<Result<Record<Permission, PermissionStatus>, PermissionError>>;
-
-  /**
-   * Opens system settings for the app
-   */
   openSettings(): Promise<Result<void, PermissionError>>;
 }
 
+const toCameraPermissionStatus = (raw: string): PermissionStatus => {
+  switch (raw) {
+    case 'granted':
+      return PermissionStatus.Granted;
+    case 'denied':
+      return PermissionStatus.Denied;
+    case 'restricted':
+      return PermissionStatus.Restricted;
+    default:
+      return PermissionStatus.NotDetermined;
+  }
+};
+
+const checkCameraOrMic = (permission: Permission): PermissionStatus => {
+  const raw =
+    permission === Permission.Camera
+      ? Camera.getCameraPermissionStatus()
+      : Camera.getMicrophonePermissionStatus();
+  return toCameraPermissionStatus(raw);
+};
+
+const requestCameraOrMic = async (permission: Permission): Promise<PermissionStatus> => {
+  const raw =
+    permission === Permission.Camera
+      ? await Camera.requestCameraPermission()
+      : await Camera.requestMicrophonePermission();
+  return toCameraPermissionStatus(raw);
+};
+
 /**
- * Permission Service Implementation Stub
- * TODO: Implement with react-native-permissions or Platform-specific APIs
+ * Permission Service Implementation
+ * Uses react-native-vision-camera for camera/microphone permissions
+ * and React Native Linking for opening system settings.
  */
 export class PermissionService implements IPermissionService {
   async checkPermission(
-    _permission: Permission,
+    permission: Permission,
   ): Promise<Result<PermissionStatus, PermissionError>> {
-    // TODO: Implement actual permission check
-    // import { check, PERMISSIONS } from 'react-native-permissions';
-    // const result = await check(PERMISSIONS.IOS.CAMERA);
-
-    return {
-      isSuccess: true,
-      isFailure: false,
-      value: PermissionStatus.NotDetermined,
-    } as Result<PermissionStatus, PermissionError>;
+    try {
+      if (permission === Permission.Storage) {
+        return success(PermissionStatus.Granted);
+      }
+      return success(checkCameraOrMic(permission));
+    } catch (e) {
+      return failure(new PermissionError('Failed to check permission', permission));
+    }
   }
 
   async requestPermission(
-    _permission: Permission,
+    permission: Permission,
   ): Promise<Result<PermissionStatus, PermissionError>> {
-    // TODO: Implement actual permission request
-    // import { request, PERMISSIONS } from 'react-native-permissions';
-    // const result = await request(PERMISSIONS.IOS.CAMERA);
-
-    return {
-      isSuccess: true,
-      isFailure: false,
-      value: PermissionStatus.Granted,
-    } as Result<PermissionStatus, PermissionError>;
+    try {
+      if (permission === Permission.Storage) {
+        return success(PermissionStatus.Granted);
+      }
+      const status = await requestCameraOrMic(permission);
+      return success(status);
+    } catch (e) {
+      return failure(new PermissionError('Failed to request permission', permission));
+    }
   }
 
   async requestPermissions(
     permissions: Permission[],
   ): Promise<Result<Record<Permission, PermissionStatus>, PermissionError>> {
-    const results: Record<Permission, PermissionStatus> = {} as Record<
-      Permission,
-      PermissionStatus
-    >;
+    const results = {} as Record<Permission, PermissionStatus>;
 
     for (const permission of permissions) {
       const result = await this.requestPermission(permission);
-      if (result.isSuccess) {
-        results[permission] = result.value;
+      if (result.isFailure) {
+        return failure(result.error);
       }
+      results[permission] = result.value;
     }
 
-    return {
-      isSuccess: true,
-      isFailure: false,
-      value: results,
-    } as Result<Record<Permission, PermissionStatus>, PermissionError>;
+    return success(results);
   }
 
   async openSettings(): Promise<Result<void, PermissionError>> {
-    // TODO: Implement actual settings open
-    // import { openSettings } from 'react-native-permissions';
-    // await openSettings();
-
-    return {
-      isSuccess: true,
-      isFailure: false,
-      value: undefined,
-    } as Result<void, PermissionError>;
+    try {
+      await Linking.openSettings();
+      return success(undefined);
+    } catch (e) {
+      return failure(new PermissionError('Failed to open settings', 'settings'));
+    }
   }
 }

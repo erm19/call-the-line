@@ -57,6 +57,13 @@
       "denied": "Storage permission was denied. Please enable it in settings."
     }
   },
+  "permissionDenied": {
+    "title": "Camera Access Required",
+    "body": "Call The Line needs camera access to detect ball bounces and make line calls during your match. Without it, the app cannot function.",
+    "instruction": "Please open Settings and enable Camera permission for Call The Line.",
+    "openSettings": "Open Settings",
+    "back": "Go Back"
+  },
   "errors": {
     "generic": "Something went wrong. Please try again.",
     "network": "Network error. Please check your connection.",

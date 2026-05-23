@@ -1,5 +1,7 @@
 import 'reflect-metadata';
 import { container as tsyringeContainer } from 'tsyringe';
+import { PermissionService } from '@platform/permissions/PermissionService';
+import { FileStorageService } from '@platform/storage/FileStorageService';
 
 /**
  * Dependency Injection Container
@@ -10,9 +12,6 @@ export class DIContainer {
 
   private constructor() {}
 
-  /**
-   * Gets the singleton instance
-   */
   static getInstance(): DIContainer {
     if (!DIContainer.instance) {
       DIContainer.instance = new DIContainer();
@@ -20,9 +19,6 @@ export class DIContainer {
     return DIContainer.instance;
   }
 
-  /**
-   * Registers a singleton dependency
-   */
   registerSingleton<T>(
     token: string | symbol,
     implementation: new (...args: unknown[]) => T,
@@ -30,9 +26,6 @@ export class DIContainer {
     tsyringeContainer.registerSingleton(token as never, implementation as never);
   }
 
-  /**
-   * Registers a transient dependency (new instance each time)
-   */
   registerTransient<T>(
     token: string | symbol,
     implementation: new (...args: unknown[]) => T,
@@ -40,23 +33,14 @@ export class DIContainer {
     tsyringeContainer.register(token as never, implementation as never);
   }
 
-  /**
-   * Registers an instance directly
-   */
   registerInstance<T>(token: string | symbol, instance: T): void {
     tsyringeContainer.registerInstance(token as never, instance as never);
   }
 
-  /**
-   * Resolves a dependency
-   */
   resolve<T>(token: string | symbol): T {
     return tsyringeContainer.resolve(token as never) as T;
   }
 
-  /**
-   * Clears all registrations (useful for testing)
-   */
   clear(): void {
     tsyringeContainer.clearInstances();
   }
@@ -95,7 +79,7 @@ export const DI_TOKENS = {
   ApiClient: Symbol('ApiClient'),
 } as const;
 
-/**
- * Export singleton instance
- */
 export const diContainer = DIContainer.getInstance();
+
+diContainer.registerSingleton(DI_TOKENS.PermissionService, PermissionService);
+diContainer.registerSingleton(DI_TOKENS.FileStorageService, FileStorageService);

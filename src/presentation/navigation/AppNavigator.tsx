@@ -9,6 +9,7 @@ import CameraScreen from '../screens/Camera/CameraScreen';
 import SessionListScreen from '../screens/Session/SessionListScreen';
 import SessionDetailScreen from '../screens/Session/SessionDetailScreen';
 import ReviewScreen from '../screens/Review/ReviewScreen';
+import { PermissionDeniedScreen } from '../screens/PermissionDenied/PermissionDeniedScreen';
 
 const Stack = createStackNavigator<RootStackParamList>();
 
@@ -50,6 +51,11 @@ const AppNavigator: React.FC = () => {
           options={{ title: 'Session Details' }}
         />
         <Stack.Screen name={Routes.Review} component={ReviewScreen} options={{ title: 'Review' }} />
+        <Stack.Screen
+          name={Routes.PermissionDenied}
+          component={PermissionDeniedScreen}
+          options={{ title: 'Camera Required' }}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );
