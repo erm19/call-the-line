@@ -62,7 +62,9 @@ export class NRTConfigRepository implements INRTConfigRepository {
   async getAverageMetrics(
     _startDate: string,
     _endDate: string,
-  ): Promise<Result<{ averageLatencyMs: number; averageFps: number; successRate: number }, StorageError>> {
+  ): Promise<
+    Result<{ averageLatencyMs: number; averageFps: number; successRate: number }, StorageError>
+  > {
     try {
       // TODO: Implement average metrics calculation
       return success({
@@ -75,4 +77,3 @@ export class NRTConfigRepository implements INRTConfigRepository {
     }
   }
 }
-

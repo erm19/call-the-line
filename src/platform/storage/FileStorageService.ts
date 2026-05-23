@@ -95,7 +95,7 @@ export class FileStorageService implements IFileStorageService {
     // import RNFS from 'react-native-fs';
     // const fullPath = `${this.getDirectoryPath(directory)}/${path}`;
     // await RNFS.writeFile(fullPath, data, 'utf8');
-    
+
     const fullPath = `${this.getDirectoryPath(directory)}/${path}`;
     return {
       isSuccess: true,
@@ -197,4 +197,3 @@ export class FileStorageService implements IFileStorageService {
     }
   }
 }
-

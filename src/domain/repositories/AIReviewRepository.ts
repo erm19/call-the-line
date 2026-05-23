@@ -48,4 +48,3 @@ export interface AIReviewRepository {
     updates: Partial<PointDecision>,
   ): Promise<Result<PointDecision, AppError>>;
 }
-

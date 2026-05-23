@@ -42,4 +42,3 @@ export const clipToDTO = (clip: Clip): ClipDTO => {
     updated_at: clip.updatedAt,
   };
 };
-

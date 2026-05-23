@@ -63,7 +63,7 @@ export class NRTCameraService implements INRTCameraService {
   async initialize(config: CameraConfig): Promise<Result<void, CameraError>> {
     // Prefer ultra-wide camera for full court capture
     const preferredDevice: CameraDevice = config.device || 'ultra-wide-angle-camera';
-    
+
     this.config = {
       ...config,
       device: preferredDevice,
@@ -74,7 +74,7 @@ export class NRTCameraService implements INRTCameraService {
     //   position: 'back',
     //   physicalDevices: ['ultra-wide-angle-camera', 'wide-angle-camera']
     // });
-    
+
     return { isSuccess: true, isFailure: false, value: undefined } as Result<void, CameraError>;
   }
 
@@ -123,7 +123,7 @@ export class NRTCameraService implements INRTCameraService {
       // Reduce resolution
       const newWidth = Math.floor(this.config.resolution.width * 0.8);
       const newHeight = Math.floor(this.config.resolution.height * 0.8);
-      
+
       this.config.resolution = {
         width: newWidth,
         height: newHeight,
@@ -143,4 +143,3 @@ export class NRTCameraService implements INRTCameraService {
     return { isSuccess: true, isFailure: false, value: undefined } as Result<void, CameraError>;
   }
 }
-

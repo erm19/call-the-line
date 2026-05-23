@@ -27,4 +27,3 @@ export interface AIResultDTO {
   created_at: string;
   updated_at: string;
 }
-

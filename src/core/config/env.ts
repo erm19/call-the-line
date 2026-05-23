@@ -47,4 +47,3 @@ export const ENV_CONFIG = {
    */
   apiVersion: 'v1',
 } as const;
-

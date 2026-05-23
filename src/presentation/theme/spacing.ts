@@ -26,4 +26,3 @@ export const borderRadius = {
 
 export type Spacing = typeof spacing;
 export type BorderRadius = typeof borderRadius;
-

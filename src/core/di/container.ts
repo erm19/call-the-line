@@ -23,14 +23,20 @@ export class DIContainer {
   /**
    * Registers a singleton dependency
    */
-  registerSingleton<T>(token: string | symbol, implementation: new (...args: unknown[]) => T): void {
+  registerSingleton<T>(
+    token: string | symbol,
+    implementation: new (...args: unknown[]) => T,
+  ): void {
     tsyringeContainer.registerSingleton(token as never, implementation as never);
   }
 
   /**
    * Registers a transient dependency (new instance each time)
    */
-  registerTransient<T>(token: string | symbol, implementation: new (...args: unknown[]) => T): void {
+  registerTransient<T>(
+    token: string | symbol,
+    implementation: new (...args: unknown[]) => T,
+  ): void {
     tsyringeContainer.register(token as never, implementation as never);
   }
 
@@ -93,4 +99,3 @@ export const DI_TOKENS = {
  * Export singleton instance
  */
 export const diContainer = DIContainer.getInstance();
-

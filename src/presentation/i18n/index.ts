@@ -53,4 +53,3 @@ export const setLocale = (locale: string): void => {
 export const getLocale = (): string => currentLocale;
 
 export default { t, setLocale, getLocale };
-

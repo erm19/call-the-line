@@ -86,4 +86,3 @@ export class AnalyticsService implements IAnalyticsService {
     // TODO: Integrate with error tracking provider (Sentry, Bugsnag, etc.)
   }
 }
-

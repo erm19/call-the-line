@@ -65,8 +65,16 @@ export class CameraService implements ICameraService {
 
   async getAvailableDevices(): Promise<Result<CameraDevice[], CameraError>> {
     // TODO: Query actual available devices
-    const devices: CameraDevice[] = ['back', 'front', 'wide-angle-camera', 'ultra-wide-angle-camera'];
-    return { isSuccess: true, isFailure: false, value: devices } as Result<CameraDevice[], CameraError>;
+    const devices: CameraDevice[] = [
+      'back',
+      'front',
+      'wide-angle-camera',
+      'ultra-wide-angle-camera',
+    ];
+    return { isSuccess: true, isFailure: false, value: devices } as Result<
+      CameraDevice[],
+      CameraError
+    >;
   }
 
   async isDeviceAvailable(device: CameraDevice): Promise<Result<boolean, CameraError>> {
@@ -76,7 +84,10 @@ export class CameraService implements ICameraService {
       return availableResult as Result<boolean, CameraError>;
     }
     const isAvailable = availableResult.value.includes(device);
-    return { isSuccess: true, isFailure: false, value: isAvailable } as Result<boolean, CameraError>;
+    return { isSuccess: true, isFailure: false, value: isAvailable } as Result<
+      boolean,
+      CameraError
+    >;
   }
 
   async startRecording(): Promise<Result<void, CameraError>> {
@@ -95,7 +106,10 @@ export class CameraService implements ICameraService {
       resolution: this.config?.resolution || { width: 1280, height: 720 },
       fps: this.config?.fps || 60,
     };
-    return { isSuccess: true, isFailure: false, value: result } as Result<RecordingResult, CameraError>;
+    return { isSuccess: true, isFailure: false, value: result } as Result<
+      RecordingResult,
+      CameraError
+    >;
   }
 
   getStatus(): CameraStatus {
@@ -109,4 +123,3 @@ export class CameraService implements ICameraService {
     return { isSuccess: true, isFailure: false, value: undefined } as Result<void, CameraError>;
   }
 }
-

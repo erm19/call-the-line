@@ -104,4 +104,3 @@ export class UnauthorizedError extends AppError {
     super(message, 'UNAUTHORIZED');
   }
 }
-

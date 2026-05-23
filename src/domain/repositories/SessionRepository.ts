@@ -10,7 +10,9 @@ export interface ISessionRepository {
   /**
    * Creates a new session
    */
-  create(session: Omit<Session, 'id' | 'createdAt' | 'updatedAt'>): Promise<Result<Session, AppError>>;
+  create(
+    session: Omit<Session, 'id' | 'createdAt' | 'updatedAt'>,
+  ): Promise<Result<Session, AppError>>;
 
   /**
    * Gets a session by ID
@@ -37,4 +39,3 @@ export interface ISessionRepository {
    */
   getActiveSession(): Promise<Result<Session | null, AppError>>;
 }
-

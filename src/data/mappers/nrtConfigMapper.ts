@@ -44,4 +44,3 @@ export const nrtConfigToDTO = (config: NRTConfig): NRTConfigDTO => {
     updated_at: config.updatedAt,
   };
 };
-

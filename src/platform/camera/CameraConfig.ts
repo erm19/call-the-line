@@ -139,4 +139,3 @@ export interface RecordingResult {
    */
   fps: number;
 }
-

@@ -47,4 +47,3 @@ export const isSuccess = <T, E>(result: Result<T, E>): result is Success<T> => {
 export const isFailure = <T, E>(result: Result<T, E>): result is Failure<E> => {
   return result.isFailure;
 };
-

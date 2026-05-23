@@ -42,4 +42,3 @@ export const calibrationToDTO = (calibration: CourtCalibration): CalibrationDTO 
     updated_at: calibration.updatedAt,
   };
 };
-

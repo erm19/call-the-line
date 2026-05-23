@@ -49,15 +49,10 @@ const AppNavigator: React.FC = () => {
           component={SessionDetailScreen}
           options={{ title: 'Session Details' }}
         />
-        <Stack.Screen
-          name={Routes.Review}
-          component={ReviewScreen}
-          options={{ title: 'Review' }}
-        />
+        <Stack.Screen name={Routes.Review} component={ReviewScreen} options={{ title: 'Review' }} />
       </Stack.Navigator>
     </NavigationContainer>
   );
 };
 
 export default AppNavigator;
-

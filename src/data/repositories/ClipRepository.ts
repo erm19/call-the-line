@@ -12,7 +12,9 @@ import { getCurrentISOString } from '@core/utils/date';
 export class ClipRepository implements IClipRepository {
   constructor(private readonly localDataSource: ClipLocalDataSource) {}
 
-  async create(clip: Omit<Clip, 'id' | 'createdAt' | 'updatedAt'>): Promise<Result<Clip, StorageError>> {
+  async create(
+    clip: Omit<Clip, 'id' | 'createdAt' | 'updatedAt'>,
+  ): Promise<Result<Clip, StorageError>> {
     try {
       const now = getCurrentISOString();
       const id = `clip_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -85,4 +87,3 @@ export class ClipRepository implements IClipRepository {
     }
   }
 }
-

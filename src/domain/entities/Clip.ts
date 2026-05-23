@@ -71,4 +71,3 @@ export interface Clip {
    */
   updatedAt: string;
 }
-

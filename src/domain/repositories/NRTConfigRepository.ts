@@ -28,15 +28,25 @@ export interface INRTConfigRepository {
   /**
    * Gets metrics for an entity
    */
-  getMetrics(entityId: string, entityType: 'session' | 'clip' | 'decision'): Promise<Result<LatencyMetrics[], AppError>>;
+  getMetrics(
+    entityId: string,
+    entityType: 'session' | 'clip' | 'decision',
+  ): Promise<Result<LatencyMetrics[], AppError>>;
 
   /**
    * Gets average metrics for a time period
    */
-  getAverageMetrics(startDate: string, endDate: string): Promise<Result<{
-    averageLatencyMs: number;
-    averageFps: number;
-    successRate: number;
-  }, AppError>>;
+  getAverageMetrics(
+    startDate: string,
+    endDate: string,
+  ): Promise<
+    Result<
+      {
+        averageLatencyMs: number;
+        averageFps: number;
+        successRate: number;
+      },
+      AppError
+    >
+  >;
 }
-

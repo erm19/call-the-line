@@ -45,15 +45,16 @@ export class SessionRepository implements ISessionRepository {
     }
   }
 
-  async getAll(
-    filters?: { limit?: number; offset?: number },
-  ): Promise<Result<Session[], StorageError>> {
+  async getAll(filters?: {
+    limit?: number;
+    offset?: number;
+  }): Promise<Result<Session[], StorageError>> {
     try {
       let dtos = await this.localDataSource.getAll();
-      
+
       // Sort by created_at descending
-      dtos = dtos.sort((a, b) => 
-        new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+      dtos = dtos.sort(
+        (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
       );
 
       // Apply pagination
@@ -104,4 +105,3 @@ export class SessionRepository implements ISessionRepository {
     }
   }
 }
-

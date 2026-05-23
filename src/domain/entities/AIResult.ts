@@ -100,4 +100,3 @@ export interface AIResult {
    */
   updatedAt: string;
 }
-

@@ -62,14 +62,14 @@ export class ApiClient {
       return await response.json();
     } catch (error) {
       clearTimeout(timeoutId);
-      
+
       if (error instanceof Error) {
         if (error.name === 'AbortError') {
           throw new NetworkError('Request timeout');
         }
         throw new NetworkError(error.message);
       }
-      
+
       throw new NetworkError('Unknown network error');
     }
   }
@@ -109,4 +109,3 @@ export class ApiClient {
     return this.request<T>({ method: 'DELETE', endpoint, headers });
   }
 }
-

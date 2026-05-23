@@ -25,4 +25,3 @@ export const getCurrentTimestamp = (): number => Date.now();
  * Gets current date as ISO string
  */
 export const getCurrentISOString = (): string => new Date().toISOString();
-

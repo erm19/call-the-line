@@ -143,4 +143,3 @@ export const ANALYTICS_CONSTANTS = {
     ERROR_OCCURRED: 'error_occurred',
   },
 } as const;
-

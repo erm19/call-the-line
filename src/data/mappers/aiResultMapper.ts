@@ -53,4 +53,3 @@ export const aiResultToDTO = (aiResult: AIResult): AIResultDTO => {
     updated_at: aiResult.updatedAt,
   };
 };
-

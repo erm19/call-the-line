@@ -37,4 +37,3 @@ export interface CalibrationRepository {
    */
   delete(id: string): Promise<Result<void, AppError>>;
 }
-

@@ -53,11 +53,13 @@ export interface IPermissionService {
  * TODO: Implement with react-native-permissions or Platform-specific APIs
  */
 export class PermissionService implements IPermissionService {
-  async checkPermission(_permission: Permission): Promise<Result<PermissionStatus, PermissionError>> {
+  async checkPermission(
+    _permission: Permission,
+  ): Promise<Result<PermissionStatus, PermissionError>> {
     // TODO: Implement actual permission check
     // import { check, PERMISSIONS } from 'react-native-permissions';
     // const result = await check(PERMISSIONS.IOS.CAMERA);
-    
+
     return {
       isSuccess: true,
       isFailure: false,
@@ -65,11 +67,13 @@ export class PermissionService implements IPermissionService {
     } as Result<PermissionStatus, PermissionError>;
   }
 
-  async requestPermission(_permission: Permission): Promise<Result<PermissionStatus, PermissionError>> {
+  async requestPermission(
+    _permission: Permission,
+  ): Promise<Result<PermissionStatus, PermissionError>> {
     // TODO: Implement actual permission request
     // import { request, PERMISSIONS } from 'react-native-permissions';
     // const result = await request(PERMISSIONS.IOS.CAMERA);
-    
+
     return {
       isSuccess: true,
       isFailure: false,
@@ -103,7 +107,7 @@ export class PermissionService implements IPermissionService {
     // TODO: Implement actual settings open
     // import { openSettings } from 'react-native-permissions';
     // await openSettings();
-    
+
     return {
       isSuccess: true,
       isFailure: false,
@@ -111,4 +115,3 @@ export class PermissionService implements IPermissionService {
     } as Result<void, PermissionError>;
   }
 }
-

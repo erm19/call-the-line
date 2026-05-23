@@ -37,4 +37,3 @@ export interface IClipRepository {
    */
   deleteBySessionId(sessionId: string): Promise<Result<void, AppError>>;
 }
-

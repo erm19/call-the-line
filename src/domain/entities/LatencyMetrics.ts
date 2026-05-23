@@ -87,4 +87,3 @@ export interface LatencyMetrics {
    */
   createdAt: string;
 }
-

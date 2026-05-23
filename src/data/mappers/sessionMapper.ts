@@ -38,4 +38,3 @@ export const sessionToDTO = (session: Session): SessionDTO => {
     updated_at: session.updatedAt,
   };
 };
-

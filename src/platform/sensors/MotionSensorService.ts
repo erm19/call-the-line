@@ -77,7 +77,7 @@ export class MotionSensorService implements IMotionSensorService {
     _interval: number = 100,
   ): Promise<Result<void, AppError>> {
     this._accelerometerListener = listener;
-    
+
     // TODO: Start actual accelerometer
     // import { accelerometer } from 'react-native-sensors';
     // accelerometer.subscribe(({ x, y, z, timestamp }) => {
@@ -106,7 +106,7 @@ export class MotionSensorService implements IMotionSensorService {
     _interval: number = 100,
   ): Promise<Result<void, AppError>> {
     this._gyroscopeListener = listener;
-    
+
     // TODO: Start actual gyroscope
     // import { gyroscope } from 'react-native-sensors';
     // gyroscope.subscribe(({ x, y, z, timestamp }) => {
@@ -141,11 +141,11 @@ export class MotionSensorService implements IMotionSensorService {
     const avgY = recent.reduce((sum, d) => sum + d.y, 0) / recent.length;
     const avgZ = recent.reduce((sum, d) => sum + d.z, 0) / recent.length;
 
-    const variance = recent.reduce((sum, d) => {
-      return sum + Math.pow(d.x - avgX, 2) + Math.pow(d.y - avgY, 2) + Math.pow(d.z - avgZ, 2);
-    }, 0) / recent.length;
+    const variance =
+      recent.reduce((sum, d) => {
+        return sum + Math.pow(d.x - avgX, 2) + Math.pow(d.y - avgY, 2) + Math.pow(d.z - avgZ, 2);
+      }, 0) / recent.length;
 
     return variance < threshold;
   }
 }
-

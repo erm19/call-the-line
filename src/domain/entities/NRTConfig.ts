@@ -95,4 +95,3 @@ export interface NRTConfig {
    */
   updatedAt: string;
 }
-
