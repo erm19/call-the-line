@@ -94,7 +94,7 @@ Mock ONLY at system boundaries:
 
 | Boundary | Mock target |
 |---|---|
-| AsyncStorage | `@react-native-async-storage/async-storage` |
+| SQLite / Drizzle | `src/data/db/client.ts` — mock the `db` singleton |
 | HTTP | `ApiClient` |
 | File system | `FileStorageService` |
 | Device APIs | Camera, Motion sensor platform services |
@@ -137,20 +137,32 @@ async execute(input: XInput): Promise<Result<X, AppError>> {
 }
 ```
 
-For **local data source** implementations (AsyncStorage pattern):
+For **local data source** implementations (Drizzle pattern):
 
 ```typescript
+// src/data/db/schema.ts defines all tables
+// src/data/db/client.ts exports the `db` singleton (injected via DI)
+
 async create(entity: Omit<X, 'id'>): Promise<Result<X, AppError>> {
   try {
     const id = generateId();
-    const item: X = { ...entity, id, createdAt: now(), updatedAt: now() };
-    const existing = await this.getAll(); // always merge, never overwrite
-    if (!existing.isSuccess) return existing;
-    const updated = [...existing.value, item];
-    await AsyncStorage.setItem(this.STORAGE_KEY, JSON.stringify(updated));
-    return Result.success(item);
+    const row = { ...toDbRow(entity), id, createdAt: now(), updatedAt: now() };
+    await this.db.insert(schema.sessions).values(row);
+    return Result.success(toEntity(row));
   } catch (e) {
     return Result.failure(new AppError('Failed to save', 'STORAGE_ERROR'));
+  }
+}
+
+async findAll(): Promise<Result<X[], AppError>> {
+  try {
+    const rows = await this.db
+      .select()
+      .from(schema.sessions)
+      .orderBy(desc(schema.sessions.createdAt));
+    return Result.success(rows.map(toEntity));
+  } catch (e) {
+    return Result.failure(new AppError('Failed to load', 'STORAGE_ERROR'));
   }
 }
 ```
@@ -277,13 +289,13 @@ The task is complete when all of the following are true:
 3. Register in `src/core/di/container.ts` if not already
 
 ### Adding a local data source
-1. Test: `src/tests/unit/<Name>LocalDataSource.test.ts` — mock `@react-native-async-storage/async-storage`
-2. Implement: `src/data/localDataSources/<Name>LocalDataSource.ts`
-3. Interface in domain: `src/domain/repositories/<Name>Repository.ts`
+1. Confirm the table is in `src/data/db/schema.ts`; add the column if missing, then re-run migration
+2. Test: `src/tests/unit/<Name>LocalDataSource.test.ts` — mock `src/data/db/client` (`jest.mock('@data/db/client')`)
+3. Implement: `src/data/localDataSources/<Name>LocalDataSource.ts` — inject `db` via DI, use Drizzle query builder
 
 ### Adding a repository implementation
-1. Test: `src/tests/integration/<Name>RepositoryImpl.test.ts` — mock AsyncStorage
-2. Implement: `src/data/repositories/<Name>Repository.ts`
+1. Test: `src/tests/integration/<Name>RepositoryImpl.test.ts` — use `expo-sqlite` in-memory DB (`:memory:`) so no mocking needed
+2. Implement: `src/data/repositories/<Name>Repository.ts` — wire `<Name>LocalDataSource`, call mapper to convert rows ↔ entities
 
 ### Adding a ViewModel + Screen
 1. Test: `src/tests/unit/<Name>ViewModel.test.ts` — mock use cases
@@ -301,7 +313,8 @@ The task is complete when all of the following are true:
 ## Gotchas
 
 - **DI registration order** — `container.ts` registers singletons; if a dependency is missing, tsyringe throws at runtime with a useless message. Check that every `@inject(TOKENS.X)` token has a matching `container.registerSingleton(TOKENS.X, Impl)` line.
-- **AsyncStorage is async all the way** — `getItem` returns `null` (not `undefined`) for missing keys. Always handle `null` explicitly; `JSON.parse(null)` returns `null`, not `[]`.
+- **Drizzle schema drift** — if you add a column to `schema.ts` without generating a migration, the app crashes at runtime with a column-not-found error. Always run `npx drizzle-kit generate` after schema changes and commit the migration file.
+- **In-memory DB for integration tests** — use `openDatabaseSync(':memory:')` from `expo-sqlite` in `beforeEach` and create tables from the migration SQL. Drizzle's `migrate()` helper works here too.
 - **Result propagation** — never unwrap a `Result` failure inside a use case and re-throw it. Return it directly so the ViewModel can handle it. Swallowed failures cause silent no-ops.
 - **Module aliases** — paths like `@domain/`, `@core/`, `@data/` are configured in `tsconfig.json`. If a new file can't resolve an alias, check `compilerOptions.paths`.
 - **Tests importing RN modules** — some RN native modules (vision-camera, AsyncStorage) need manual mocks in `__mocks__/`. If a test crashes with "NativeModule X is null", check `__mocks__/`.
