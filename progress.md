@@ -10,9 +10,9 @@ End-of-session instructions:
 
 ## Current Status
 
-**Phase:** Phase 0 complete — starting Phase 1 (Core Session Flow)
+**Phase:** Phase 1 (Core Session Flow) — task 1.0a complete
 
-**Next task:** `1.1` — Implement `StartSession` use case body
+**Next task:** `1.0b` — Define Drizzle schema (`src/data/db/schema.ts`)
 
 ---
 
@@ -38,6 +38,28 @@ End-of-session instructions:
 
 **Next session start point:**
 > Phase 1, task 1.1: Open `src/domain/useCases/StartSession.ts` and implement the use case body. Then 1.2, 1.3 in sequence. After use cases pass tests, move to 1.4 (AsyncStorage implementation).
+
+---
+
+### Session 2 — 2026-05-24
+
+**Done:**
+- Task 1.0a: Installed `expo-sqlite` (v56), `expo-modules-core` (v56), `drizzle-orm`, `drizzle-kit`; created `drizzle.config.ts`; removed `@react-native-async-storage/async-storage`
+- Replaced all 4 local data source stubs (`SessionLocalDataSource`, `ClipLocalDataSource`, `CalibrationLocalDataSource`, `NRTConfigLocalDataSource`) with Drizzle-ready stubs (no AsyncStorage)
+- Fixed pre-existing scaffold type errors: all 9 use cases were importing `SessionRepository`/`ClipRepository`/`NRTConfigRepository` instead of the correct `ISessionRepository`/`IClipRepository`/`INRTConfigRepository` interface names
+- Fixed pre-existing ESLint errors: added `eslint-plugin-jest` as direct dep (was only nested in `@react-native/eslint-config`), added `jest` to plugins in `.eslintrc.js`, added CJS config file override for `no-var-requires`, ran `npm run format` to fix prettier issues across scaffold
+
+**Key decisions:**
+- `expo-modules-core/babel` plugin was removed in v56 — no babel change needed for JSI (it's native-level)
+- `transformIgnorePatterns` in `jest.config.js` extended to include `expo-sqlite|expo-modules-core|expo`
+- `drizzle.config.ts` uses `dialect: 'sqlite', driver: 'expo'` for expo-sqlite compatibility
+
+**Blockers / open questions:**
+- Native iOS/Android dirs don't exist yet — `pod install` for expo-sqlite native bindings will be needed when native setup begins
+- `baseline-browser-mapping` package is outdated (cosmetic warning only, not blocking)
+
+**Next session start point:**
+> Phase 1, task 1.0b: Create `src/data/db/schema.ts` with Drizzle table definitions for `sessions`, `clips`, `calibrations`, `aiResults`, `nrtConfigs`.
 
 ---
 

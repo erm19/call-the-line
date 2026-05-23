@@ -35,7 +35,7 @@ Check off with `[x]` as tasks complete. See `progress.md` for session log.
 
 Goal: create/list/view sessions end-to-end with persistent storage.
 
-- [ ] **1.0a** Install `expo-sqlite` + `drizzle-orm` + `drizzle-kit`; add `drizzle.config.ts`; update `babel.config.js` for JSI; remove `@react-native-async-storage/async-storage`
+- [x] **1.0a** Install `expo-sqlite` + `drizzle-orm` + `drizzle-kit`; add `drizzle.config.ts`; update `babel.config.js` for JSI; remove `@react-native-async-storage/async-storage`
 - [ ] **1.0b** Define Drizzle schema (`src/data/db/schema.ts`) — `sessions`, `clips`, `calibrations`, `aiResults`, `nrtConfigs` tables with all columns and relations
 - [ ] **1.0c** Generate initial migration (`src/data/db/migrations/`); create `db` client singleton (`src/data/db/client.ts`); register `DB_CLIENT` token in DI container
 - [ ] **1.1** Implement `StartSession` use case body — generate ID, set timestamps, persist via `SessionRepository`
