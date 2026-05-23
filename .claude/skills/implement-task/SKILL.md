@@ -1,39 +1,140 @@
 ---
 name: implement-task
-description: implement the next task from plan.md — create branch, RGR cycle, quality gate, commit, update progress. Use when asked to "implement the next task", "work on task X.Y", "continue from where we left off", or "start a new task".
+description: implement the next task from plan.md — create branch, RGR cycle, quality gate, commit, update progress. Supports parallel worktree waves. Use when asked to "implement the next task", "work on task X.Y", "continue from where we left off", "start a new task", or "run the next wave".
 ---
 
 # implement-task
 
-Implements one atomic task from `plan.md` in full: branch → RGR → quality gate → commit → update tracking files.
+Two modes:
 
-Each task in `plan.md` maps to exactly one branch and one or more commits. Nothing is merged automatically — only committed.
+- **Wave mode** — triggered by `/implement-task wave`. Reads the next ready wave from `plan.md`'s Parallel Execution Strategy, spawns up to 4 sub-agents each in an isolated worktree, and — critically — **only the orchestrator writes `plan.md` and `progress.md`** to prevent conflicts.
+- **Single mode** — triggered by `/implement-task` or `/implement-task X.Y`. One task, one branch, the original linear RGR flow.
 
 ---
 
-## Phase 0 — Orient
-
-Read these files before touching any code:
+## Phase 0 — Orient & Select Mode
 
 ```bash
-cat plan.md          # find the target task
-cat progress.md      # last session's endpoint and open blockers
+cat plan.md        # task list + parallel strategy
+cat progress.md    # last session endpoint + blockers
 ```
 
-**Selecting the task:**
-- If the user named a task ID (e.g. `1.3`), use that.
-- Otherwise use the first unchecked `[ ]` item in `plan.md`.
-
-Extract the task ID and short slug. Examples:
-
-| Task line | ID | Slug |
-|---|---|---|
-| `[ ] **1.1** Implement StartSession use case body` | `1.1` | `implement-start-session` |
-| `[ ] **2.3** Implement FileStorageService` | `2.3` | `implement-file-storage-service` |
+**Mode selection:**
+- `/implement-task wave` → **Wave mode** (see Wave Mode section)
+- `/implement-task X.Y` → **Single mode** for that task
+- `/implement-task` (no args) → first unchecked `[ ]` task → **Single mode**
 
 ---
 
-## Phase 1 — Branch
+## Wave Mode
+
+The orchestrator spawns workers, waits, then does all file writes. Workers never touch `plan.md` or `progress.md`.
+
+### W1 — Identify the current wave
+
+In `plan.md`'s **Parallel Execution Strategy** section, find the first Wave table where:
+1. All "Needs" branches are already merged into `main` (`git branch --merged main`)
+2. At least one task in the wave is still unchecked `[ ]`
+
+Extract each row: branch name, task IDs. Skip rows where every task is already `[x]`.
+
+### W2 — Spawn sub-agents
+
+For each worktree row from W1, launch one sub-agent **simultaneously** using the Agent tool with `isolation: "worktree"`. Pass each agent this prompt (fill in the placeholders):
+
+---
+
+> You are a **worker agent** implementing tasks for the Call The Line app.
+>
+> **Your tasks:** `<task IDs>` — `<full task descriptions from plan.md>`
+>
+> **Your branch:** create and work on `<branch name from the wave table>`
+>
+> Follow these steps:
+>
+> 1. **Branch** — `git checkout main && git checkout -b <branch-name>`
+> 2. **Read** — read every file the tasks will touch before writing any code (see the "Understand Before Writing" section of this skill)
+> 3. **RGR** — for each task: write the failing test first, then implement minimally, then refactor. Follow the architecture rules and Gotchas at the bottom of this skill.
+> 4. **Quality gate** — `npm test && npm run typecheck && npm run lint`. Fix all failures before continuing.
+> 5. **Commit** — `git add -p` (code and tests only), then `git commit -m "<type>: <description>"`
+>
+> **CRITICAL:** Do **NOT** modify `plan.md` or `progress.md`. The orchestrator handles those.
+>
+> When all tasks are done (or you've hit an unresolvable blocker), reply with **only** this structured block:
+>
+> ```
+> TASKS_COMPLETED: <comma-separated task IDs that passed quality gate>
+> TASKS_BLOCKED: <comma-separated task IDs that could not complete, or "none">
+> BRANCH: <branch name>
+> COMMITS: <one-line summary per commit, newest first>
+> DECISIONS: <key non-obvious choices, one per line, or "none">
+> BLOCKERS: <description of any unresolved issues, or "none">
+> ```
+
+---
+
+### W3 — Wait and collect
+
+Wait for all sub-agents to finish. Collect their structured blocks.
+
+If a sub-agent's final message contains no structured block, treat all its tasks as blocked with reason "agent did not complete".
+
+### W4 — Update tracking files (orchestrator only)
+
+**`plan.md`** — for every task ID in any `TASKS_COMPLETED` list:
+
+Change `- [ ] **X.Y**` → `- [x] **X.Y**`
+
+**`progress.md`** — append one session entry:
+
+```markdown
+### Session N — YYYY-MM-DD
+
+**Wave:** <Wave N> — branches: <comma-separated branch names>
+
+**Done:**
+- Task X.Y: <description> (branch: feat/...)
+- Task X.Y: <description> (branch: feat/...)
+
+**Key decisions:**
+- <aggregated DECISIONS from all worker reports, deduplicated>
+
+**Blockers / open questions:**
+- <aggregated BLOCKERS from all worker reports, or "none">
+
+**Next session start point:**
+> Next wave: <next wave from plan.md strategy>, pending merges of: <branch list>.
+> Run `/implement-task wave` again after merging.
+```
+
+**Commit tracking updates on `main`:**
+
+```bash
+git checkout main
+git add plan.md progress.md
+git commit -m "docs: mark wave <N> tasks complete — <task ID list>"
+```
+
+### W5 — Report to user
+
+```
+Wave N complete.
+
+Branches ready to merge:
+  <branch>   →  tasks <IDs>  ✓
+  <branch>   →  tasks <IDs>  ✓
+
+Blocked (left unchecked):
+  <task ID>  →  <reason>
+
+Next: Wave <N+1> unblocked after merges. Run `/implement-task wave` again.
+```
+
+---
+
+## Single Task Mode
+
+### Phase 1 — Branch
 
 Check the current branch. If already on a task branch for *this* task, skip creation.
 
@@ -54,7 +155,7 @@ Branch naming: `task/<numeric-id>-<kebab-slug>` (lowercase, dashes, no slashes i
 
 ---
 
-## Phase 2 — Understand Before Writing
+### Phase 2 — Understand Before Writing
 
 Read all files the task will touch. Grep for related types and interfaces:
 
@@ -82,11 +183,11 @@ Read `ARCHITECTURE.md` if the task is in an unfamiliar layer.
 
 ---
 
-## Phase 3 — RGR Implementation
+### Phase 3 — RGR Implementation
 
 Follow **Red → Green → Refactor** strictly. Never write implementation before the failing test exists.
 
-### 3a. Red — write the failing test
+#### 3a. Red — write the failing test
 
 **Test file location:** `src/tests/unit/<Name>.test.ts`
 
@@ -107,7 +208,7 @@ Run to confirm it is red:
 npm test -- --testPathPattern="<Name>"
 ```
 
-### 3b. Green — minimal implementation
+#### 3b. Green — minimal implementation
 
 Implement just enough to make the test pass. No speculative code.
 
@@ -185,13 +286,13 @@ async startSession(input: StartSessionInput): Promise<void> {
 }
 ```
 
-### 3c. Refactor
+#### 3c. Refactor
 
 Once green, refactor for clarity. Function max 30 lines. If a function needs `// --- section ---` comments to be readable, extract helpers.
 
 ---
 
-## Phase 4 — Quality Gate
+### Phase 4 — Quality Gate
 
 Run all three. Fix every failure before proceeding:
 
@@ -205,7 +306,7 @@ If any fail, fix them. Do not proceed with failing checks.
 
 ---
 
-## Phase 5 — Update Tracking Files
+### Phase 5 — Update Tracking Files
 
 **Mark the task done in `plan.md`:**
 
@@ -232,7 +333,7 @@ Change `- [ ] **X.Y**` → `- [x] **X.Y**` for the task just completed.
 
 ---
 
-## Phase 6 — Commit
+### Phase 6 — Commit
 
 ```bash
 git add -p    # stage only task-related changes; never stage unrelated hunks
@@ -268,7 +369,7 @@ Push when ready: git push -u origin task/<ID>-<slug>
 
 ---
 
-## Phase 7 — Done Criteria
+### Phase 7 — Done Criteria
 
 The task is complete when all of the following are true:
 
@@ -318,3 +419,6 @@ The task is complete when all of the following are true:
 - **Result propagation** — never unwrap a `Result` failure inside a use case and re-throw it. Return it directly so the ViewModel can handle it. Swallowed failures cause silent no-ops.
 - **Module aliases** — paths like `@domain/`, `@core/`, `@data/` are configured in `tsconfig.json`. If a new file can't resolve an alias, check `compilerOptions.paths`.
 - **Tests importing RN modules** — some RN native modules (vision-camera, AsyncStorage) need manual mocks in `__mocks__/`. If a test crashes with "NativeModule X is null", check `__mocks__/`.
+- **Wave mode: never update plan.md/progress.md from a worker** — sub-agents commit code only. If a worker touches tracking files, those commits will conflict when branches merge back. The orchestrator is the single writer.
+- **Wave mode: worktrees share node_modules** — each worktree path is a separate directory but they share the repo's `.git`. Each worker should have `node_modules` installed (`npm install`) before running tests. If a dependency is missing in the worktree, `npm ci` in that path.
+- **Wave mode: worker branch naming** — workers must use the exact branch name from the wave table in `plan.md`. Diverging names breaks the W1 "deps merged" check for the next wave.
