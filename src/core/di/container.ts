@@ -93,6 +93,9 @@ export const DI_TOKENS = {
 
   // API Client
   ApiClient: Symbol('ApiClient'),
+
+  // Database
+  DB_CLIENT: Symbol('DB_CLIENT'),
 } as const;
 
 /**
