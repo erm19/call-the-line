@@ -5,6 +5,47 @@ Check off with `[x]` as tasks complete. See `progress.md` for session log.
 
 ---
 
+## Parallel Execution Strategy (git worktrees, max 4)
+
+Use `git worktree add ../call-the-line-<name> -b feat/<name>` for each slot.
+Merge waves in order — later waves depend on earlier ones.
+
+### Dependency Map
+```
+1.0b → 1.0c ──────────────→ 1.4 → 1.5 → 1.14, 1.15, 1.11
+1.1 ┐
+1.2 ┼─→ 1.13 → 1.6 → 1.7 → 1.8
+1.3 ┘         ↘ 1.9 → 1.10
+
+Standalones (no deps): 1.12, 2.1, 2.3, 2.9, 2.11, 2.12, 3.4, 3.8, 4.1, 5.1
+```
+
+### Wave 1 — unblock everything
+| Worktree | Branch | Tasks |
+|---|---|---|
+| WT-1 | `feat/db-foundation` | 1.0b → 1.0c |
+| WT-2 | `feat/session-use-cases` | 1.1 + 1.2 + 1.3 + 1.13 |
+| WT-3 | `feat/platform-services` | 2.1 + 2.3 + 2.9 |
+| WT-4 | `feat/standalone-ui` | 1.12 + 2.11 + 2.12 + 3.4 + 3.8 + 4.1 |
+
+### Wave 2 — after Wave 1 merges
+| Worktree | Branch | Tasks | Needs |
+|---|---|---|---|
+| WT-1 | `feat/session-data-layer` | 1.4 + 1.5 + 1.14 + 1.15 | db-foundation |
+| WT-2 | `feat/session-store` | 1.6 + 1.7 + 1.8 | session-use-cases |
+| WT-3 | `feat/session-list-detail` | 1.9 + 1.10 + 1.11 | session-use-cases |
+| WT-4 | `feat/camera-core` | 2.2 + 2.4 + 2.13 | platform-services |
+
+### Wave 3 — Phase 2 + 3 in parallel
+| Worktree | Branch | Tasks | Needs |
+|---|---|---|---|
+| WT-1 | `feat/clip-data-layer` | 2.5 + 2.6 + 2.15 | db-foundation, camera-core |
+| WT-2 | `feat/camera-ui` | 2.7 + 2.8 + 2.10 + 2.14 | camera-core, platform-services |
+| WT-3 | `feat/calibration-data` | 3.1 + 3.2 + 3.3 + 3.9 | db-foundation |
+| WT-4 | `feat/calibration-ui` | 3.5 + 3.6 + 3.7 + 3.10 | standalone-ui (CourtOverlay) |
+
+---
+
 ## Phase 0: Scaffold ✅
 
 - [x] React Native bare project initialized
