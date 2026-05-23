@@ -3,19 +3,17 @@
  * Run before each test suite
  */
 
-// Mock AsyncStorage
-jest.mock('@react-native-async-storage/async-storage', () => ({
-  __esModule: true,
-  default: {
-    setItem: jest.fn(() => Promise.resolve()),
-    getItem: jest.fn(() => Promise.resolve(null)),
-    removeItem: jest.fn(() => Promise.resolve()),
-    clear: jest.fn(() => Promise.resolve()),
-    getAllKeys: jest.fn(() => Promise.resolve([])),
-    multiGet: jest.fn(() => Promise.resolve([])),
-    multiSet: jest.fn(() => Promise.resolve()),
-    multiRemove: jest.fn(() => Promise.resolve()),
-  },
+// Mock expo-sqlite (native module — JSI boundary)
+jest.mock('expo-sqlite', () => ({
+  openDatabaseSync: jest.fn(() => ({
+    execSync: jest.fn(),
+    runSync: jest.fn(),
+    getAllSync: jest.fn(() => []),
+    getFirstSync: jest.fn(() => null),
+    closeSync: jest.fn(),
+    withTransactionSync: jest.fn((fn: () => void) => fn()),
+  })),
+  SQLiteDatabase: jest.fn(),
 }));
 
 // Mock react-native-vision-camera
@@ -35,4 +33,3 @@ global.console = {
   warn: jest.fn(),
   error: jest.fn(),
 };
-

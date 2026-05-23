@@ -2,7 +2,7 @@ import { Result } from '@core/utils/result';
 import { AppError } from '@core/errors/AppError';
 import { CourtCalibration } from '../entities/CourtCalibration';
 import { CalibrationRepository } from '../repositories/CalibrationRepository';
-import { SessionRepository } from '../repositories/SessionRepository';
+import { ISessionRepository } from '../repositories/SessionRepository';
 import { IAnalyticsService } from '@core/analytics/AnalyticsService';
 import { ANALYTICS_CONSTANTS } from '@core/config/constants';
 import { failure } from '@core/utils/result';
@@ -19,7 +19,7 @@ export type SaveCalibrationInput = Omit<CourtCalibration, 'id' | 'createdAt' | '
 export class SaveCalibration {
   constructor(
     private readonly calibrationRepository: CalibrationRepository,
-    private readonly sessionRepository: SessionRepository,
+    private readonly sessionRepository: ISessionRepository,
     private readonly analyticsService: IAnalyticsService,
   ) {}
 
@@ -52,4 +52,3 @@ export class SaveCalibration {
     return result;
   }
 }
-

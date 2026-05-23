@@ -1,8 +1,8 @@
 import { Result } from '@core/utils/result';
 import { AppError } from '@core/errors/AppError';
 import { Clip } from '../entities/Clip';
-import { ClipRepository } from '../repositories/ClipRepository';
-import { SessionRepository } from '../repositories/SessionRepository';
+import { IClipRepository } from '../repositories/ClipRepository';
+import { ISessionRepository } from '../repositories/SessionRepository';
 import { getCurrentISOString } from '@core/utils/date';
 import { IAnalyticsService } from '@core/analytics/AnalyticsService';
 import { ANALYTICS_CONSTANTS } from '@core/config/constants';
@@ -30,8 +30,8 @@ export interface RecordClipInput {
  */
 export class RecordClip {
   constructor(
-    private readonly clipRepository: ClipRepository,
-    private readonly sessionRepository: SessionRepository,
+    private readonly clipRepository: IClipRepository,
+    private readonly sessionRepository: ISessionRepository,
     private readonly analyticsService: IAnalyticsService,
   ) {}
 
@@ -77,4 +77,3 @@ export class RecordClip {
     return result;
   }
 }
-

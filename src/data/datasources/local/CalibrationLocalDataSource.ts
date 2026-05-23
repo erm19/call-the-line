@@ -1,61 +1,31 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { CalibrationDTO } from '../../models/CalibrationDTO';
 
 /**
  * Local data source for calibrations
+ * Implementation: Drizzle ORM on expo-sqlite (task 3.1)
  */
 export class CalibrationLocalDataSource {
-  private readonly STORAGE_KEY = '@calibrations';
-
-  async create(calibration: CalibrationDTO): Promise<CalibrationDTO> {
-    const calibrations = await this.getAll();
-    calibrations.push(calibration);
-    await AsyncStorage.setItem(this.STORAGE_KEY, JSON.stringify(calibrations));
-    return calibration;
+  async create(_calibration: CalibrationDTO): Promise<CalibrationDTO> {
+    throw new Error('CalibrationLocalDataSource.create not yet implemented');
   }
 
-  async getById(id: string): Promise<CalibrationDTO | null> {
-    const calibrations = await this.getAll();
-    return calibrations.find(c => c.id === id) || null;
+  async getById(_id: string): Promise<CalibrationDTO | null> {
+    throw new Error('CalibrationLocalDataSource.getById not yet implemented');
   }
 
   async getAll(): Promise<CalibrationDTO[]> {
-    const data = await AsyncStorage.getItem(this.STORAGE_KEY);
-    return data ? JSON.parse(data) : [];
+    throw new Error('CalibrationLocalDataSource.getAll not yet implemented');
   }
 
-  async getBySessionId(sessionId: string): Promise<CalibrationDTO | null> {
-    const calibrations = await this.getAll();
-    return calibrations.find(c => c.session_id === sessionId) || null;
+  async getBySessionId(_sessionId: string): Promise<CalibrationDTO | null> {
+    throw new Error('CalibrationLocalDataSource.getBySessionId not yet implemented');
   }
 
-  async update(id: string, updates: Partial<CalibrationDTO>): Promise<CalibrationDTO | null> {
-    const calibrations = await this.getAll();
-    const index = calibrations.findIndex(c => c.id === id);
-    
-    if (index === -1) {
-      return null;
-    }
-
-    calibrations[index] = {
-      ...calibrations[index],
-      ...updates,
-      updated_at: new Date().toISOString(),
-    };
-    await AsyncStorage.setItem(this.STORAGE_KEY, JSON.stringify(calibrations));
-    return calibrations[index];
+  async update(_id: string, _updates: Partial<CalibrationDTO>): Promise<CalibrationDTO | null> {
+    throw new Error('CalibrationLocalDataSource.update not yet implemented');
   }
 
-  async delete(id: string): Promise<boolean> {
-    const calibrations = await this.getAll();
-    const filtered = calibrations.filter(c => c.id !== id);
-    
-    if (filtered.length === calibrations.length) {
-      return false;
-    }
-
-    await AsyncStorage.setItem(this.STORAGE_KEY, JSON.stringify(filtered));
-    return true;
+  async delete(_id: string): Promise<boolean> {
+    throw new Error('CalibrationLocalDataSource.delete not yet implemented');
   }
 }
-

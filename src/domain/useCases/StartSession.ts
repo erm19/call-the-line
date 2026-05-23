@@ -1,7 +1,7 @@
 import { Result } from '@core/utils/result';
 import { AppError } from '@core/errors/AppError';
 import { Session, SessionStatus } from '../entities/Session';
-import { SessionRepository } from '../repositories/SessionRepository';
+import { ISessionRepository } from '../repositories/SessionRepository';
 import { getCurrentISOString } from '@core/utils/date';
 import { IAnalyticsService } from '@core/analytics/AnalyticsService';
 import { ANALYTICS_CONSTANTS, SESSION_CONSTANTS } from '@core/config/constants';
@@ -21,7 +21,7 @@ export interface StartSessionInput {
  */
 export class StartSession {
   constructor(
-    private readonly sessionRepository: SessionRepository,
+    private readonly sessionRepository: ISessionRepository,
     private readonly analyticsService: IAnalyticsService,
   ) {}
 
@@ -54,4 +54,3 @@ export class StartSession {
     return result;
   }
 }
-

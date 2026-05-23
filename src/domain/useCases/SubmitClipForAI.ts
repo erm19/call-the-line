@@ -2,7 +2,7 @@ import { Result } from '@core/utils/result';
 import { AppError } from '@core/errors/AppError';
 import { AIResult } from '../entities/AIResult';
 import { AIReviewRepository } from '../repositories/AIReviewRepository';
-import { ClipRepository } from '../repositories/ClipRepository';
+import { IClipRepository } from '../repositories/ClipRepository';
 import { failure } from '@core/utils/result';
 
 /**
@@ -12,7 +12,7 @@ import { failure } from '@core/utils/result';
 export class SubmitClipForAI {
   constructor(
     private readonly aiReviewRepository: AIReviewRepository,
-    private readonly clipRepository: ClipRepository,
+    private readonly clipRepository: IClipRepository,
   ) {}
 
   async execute(clipId: string): Promise<Result<AIResult, AppError>> {
@@ -25,4 +25,3 @@ export class SubmitClipForAI {
     return this.aiReviewRepository.submitForProcessing(clipId);
   }
 }
-

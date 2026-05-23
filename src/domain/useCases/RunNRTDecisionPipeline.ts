@@ -1,7 +1,7 @@
 import { Result } from '@core/utils/result';
 import { NRTError } from '@core/errors/AppError';
 import { PointDecision } from '../entities/PointDecision';
-import { NRTConfigRepository } from '../repositories/NRTConfigRepository';
+import { INRTConfigRepository } from '../repositories/NRTConfigRepository';
 import { getCurrentTimestamp } from '@core/utils/date';
 import { failure } from '@core/utils/result';
 
@@ -20,9 +20,7 @@ export interface RunNRTDecisionPipelineInput {
  * This is a placeholder implementation - actual NRT logic would be more complex
  */
 export class RunNRTDecisionPipeline {
-  constructor(
-    private readonly nrtConfigRepository: NRTConfigRepository,
-  ) {}
+  constructor(private readonly nrtConfigRepository: INRTConfigRepository) {}
 
   async execute(_input: RunNRTDecisionPipelineInput): Promise<Result<PointDecision, NRTError>> {
     const startTime = getCurrentTimestamp();
@@ -59,4 +57,3 @@ export class RunNRTDecisionPipeline {
     );
   }
 }
-

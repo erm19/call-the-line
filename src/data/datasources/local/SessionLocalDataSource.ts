@@ -1,53 +1,27 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { SessionDTO } from '../../models/SessionDTO';
 
 /**
  * Local data source for sessions
- * Uses AsyncStorage for persistence
+ * Implementation: Drizzle ORM on expo-sqlite (task 1.4)
  */
 export class SessionLocalDataSource {
-  private readonly STORAGE_KEY = '@sessions';
-
-  async create(session: SessionDTO): Promise<SessionDTO> {
-    const sessions = await this.getAll();
-    sessions.push(session);
-    await AsyncStorage.setItem(this.STORAGE_KEY, JSON.stringify(sessions));
-    return session;
+  async create(_session: SessionDTO): Promise<SessionDTO> {
+    throw new Error('SessionLocalDataSource.create not yet implemented');
   }
 
-  async getById(id: string): Promise<SessionDTO | null> {
-    const sessions = await this.getAll();
-    return sessions.find(s => s.id === id) || null;
+  async getById(_id: string): Promise<SessionDTO | null> {
+    throw new Error('SessionLocalDataSource.getById not yet implemented');
   }
 
   async getAll(): Promise<SessionDTO[]> {
-    const data = await AsyncStorage.getItem(this.STORAGE_KEY);
-    return data ? JSON.parse(data) : [];
+    throw new Error('SessionLocalDataSource.getAll not yet implemented');
   }
 
-  async update(id: string, updates: Partial<SessionDTO>): Promise<SessionDTO | null> {
-    const sessions = await this.getAll();
-    const index = sessions.findIndex(s => s.id === id);
-    
-    if (index === -1) {
-      return null;
-    }
-
-    sessions[index] = { ...sessions[index], ...updates, updated_at: new Date().toISOString() };
-    await AsyncStorage.setItem(this.STORAGE_KEY, JSON.stringify(sessions));
-    return sessions[index];
+  async update(_id: string, _updates: Partial<SessionDTO>): Promise<SessionDTO | null> {
+    throw new Error('SessionLocalDataSource.update not yet implemented');
   }
 
-  async delete(id: string): Promise<boolean> {
-    const sessions = await this.getAll();
-    const filtered = sessions.filter(s => s.id !== id);
-    
-    if (filtered.length === sessions.length) {
-      return false;
-    }
-
-    await AsyncStorage.setItem(this.STORAGE_KEY, JSON.stringify(filtered));
-    return true;
+  async delete(_id: string): Promise<boolean> {
+    throw new Error('SessionLocalDataSource.delete not yet implemented');
   }
 }
-

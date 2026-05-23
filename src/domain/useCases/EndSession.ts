@@ -1,7 +1,7 @@
 import { Result } from '@core/utils/result';
 import { AppError, NotFoundError } from '@core/errors/AppError';
 import { Session, SessionStatus } from '../entities/Session';
-import { SessionRepository } from '../repositories/SessionRepository';
+import { ISessionRepository } from '../repositories/SessionRepository';
 import { getCurrentISOString } from '@core/utils/date';
 import { IAnalyticsService } from '@core/analytics/AnalyticsService';
 import { ANALYTICS_CONSTANTS } from '@core/config/constants';
@@ -13,7 +13,7 @@ import { failure } from '@core/utils/result';
  */
 export class EndSession {
   constructor(
-    private readonly sessionRepository: SessionRepository,
+    private readonly sessionRepository: ISessionRepository,
     private readonly analyticsService: IAnalyticsService,
   ) {}
 
@@ -49,4 +49,3 @@ export class EndSession {
     return result;
   }
 }
-

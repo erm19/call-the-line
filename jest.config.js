@@ -11,7 +11,7 @@ module.exports = {
     '!src/**/*.spec.{ts,tsx}',
   ],
   transformIgnorePatterns: [
-    'node_modules/(?!(react-native|@react-native|@react-navigation|react-native-vision-camera)/)',
+    'node_modules/(?!(react-native|@react-native|@react-navigation|react-native-vision-camera|expo-sqlite|expo-modules-core|expo)/)',
   ],
   moduleNameMapper: {
     '^@domain/(.*)$': '<rootDir>/src/domain/$1',
@@ -21,4 +21,3 @@ module.exports = {
     '^@core/(.*)$': '<rootDir>/src/core/$1',
   },
 };
-

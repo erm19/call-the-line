@@ -14,4 +14,3 @@ export class GetAIResult {
     return this.aiReviewRepository.getAIResultByClipId(clipId);
   }
 }
-

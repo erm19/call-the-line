@@ -1,7 +1,7 @@
 import { Result } from '@core/utils/result';
 import { AppError } from '@core/errors/AppError';
 import { NRTConfig } from '../entities/NRTConfig';
-import { NRTConfigRepository } from '../repositories/NRTConfigRepository';
+import { INRTConfigRepository } from '../repositories/NRTConfigRepository';
 import { IAnalyticsService } from '@core/analytics/AnalyticsService';
 
 /**
@@ -10,7 +10,7 @@ import { IAnalyticsService } from '@core/analytics/AnalyticsService';
  */
 export class StopLiveTracking {
   constructor(
-    private readonly nrtConfigRepository: NRTConfigRepository,
+    private readonly nrtConfigRepository: INRTConfigRepository,
     private readonly analyticsService: IAnalyticsService,
   ) {}
 
@@ -28,4 +28,3 @@ export class StopLiveTracking {
     return result;
   }
 }
-

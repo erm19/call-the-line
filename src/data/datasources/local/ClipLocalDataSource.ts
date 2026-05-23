@@ -1,63 +1,35 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ClipDTO } from '../../models/ClipDTO';
 
 /**
  * Local data source for clips
+ * Implementation: Drizzle ORM on expo-sqlite (task 2.5)
  */
 export class ClipLocalDataSource {
-  private readonly STORAGE_KEY = '@clips';
-
-  async create(clip: ClipDTO): Promise<ClipDTO> {
-    const clips = await this.getAll();
-    clips.push(clip);
-    await AsyncStorage.setItem(this.STORAGE_KEY, JSON.stringify(clips));
-    return clip;
+  async create(_clip: ClipDTO): Promise<ClipDTO> {
+    throw new Error('ClipLocalDataSource.create not yet implemented');
   }
 
-  async getById(id: string): Promise<ClipDTO | null> {
-    const clips = await this.getAll();
-    return clips.find(c => c.id === id) || null;
+  async getById(_id: string): Promise<ClipDTO | null> {
+    throw new Error('ClipLocalDataSource.getById not yet implemented');
   }
 
   async getAll(): Promise<ClipDTO[]> {
-    const data = await AsyncStorage.getItem(this.STORAGE_KEY);
-    return data ? JSON.parse(data) : [];
+    throw new Error('ClipLocalDataSource.getAll not yet implemented');
   }
 
-  async getBySessionId(sessionId: string): Promise<ClipDTO[]> {
-    const clips = await this.getAll();
-    return clips.filter(c => c.session_id === sessionId);
+  async getBySessionId(_sessionId: string): Promise<ClipDTO[]> {
+    throw new Error('ClipLocalDataSource.getBySessionId not yet implemented');
   }
 
-  async update(id: string, updates: Partial<ClipDTO>): Promise<ClipDTO | null> {
-    const clips = await this.getAll();
-    const index = clips.findIndex(c => c.id === id);
-    
-    if (index === -1) {
-      return null;
-    }
-
-    clips[index] = { ...clips[index], ...updates, updated_at: new Date().toISOString() };
-    await AsyncStorage.setItem(this.STORAGE_KEY, JSON.stringify(clips));
-    return clips[index];
+  async update(_id: string, _updates: Partial<ClipDTO>): Promise<ClipDTO | null> {
+    throw new Error('ClipLocalDataSource.update not yet implemented');
   }
 
-  async delete(id: string): Promise<boolean> {
-    const clips = await this.getAll();
-    const filtered = clips.filter(c => c.id !== id);
-    
-    if (filtered.length === clips.length) {
-      return false;
-    }
-
-    await AsyncStorage.setItem(this.STORAGE_KEY, JSON.stringify(filtered));
-    return true;
+  async delete(_id: string): Promise<boolean> {
+    throw new Error('ClipLocalDataSource.delete not yet implemented');
   }
 
-  async deleteBySessionId(sessionId: string): Promise<void> {
-    const clips = await this.getAll();
-    const filtered = clips.filter(c => c.session_id !== sessionId);
-    await AsyncStorage.setItem(this.STORAGE_KEY, JSON.stringify(filtered));
+  async deleteBySessionId(_sessionId: string): Promise<void> {
+    throw new Error('ClipLocalDataSource.deleteBySessionId not yet implemented');
   }
 }
-
