@@ -9,6 +9,7 @@ import { failure } from '@core/utils/result';
  * Input for RunNRTDecisionPipeline use case
  */
 export interface RunNRTDecisionPipelineInput {
+  sessionId: string;
   clipId: string;
   frameBuffer: unknown[]; // Frame data buffer
   impactFrameIndex: number; // Suspected impact frame
@@ -26,7 +27,7 @@ export class RunNRTDecisionPipeline {
     const startTime = getCurrentTimestamp();
 
     // Check if NRT is enabled
-    const configResult = await this.nrtConfigRepository.getConfig();
+    const configResult = await this.nrtConfigRepository.getConfig(_input.sessionId);
     if (configResult.isFailure) {
       return failure(configResult.error);
     }

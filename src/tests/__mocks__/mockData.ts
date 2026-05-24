@@ -39,6 +39,7 @@ export const mockClip: Clip = {
 
 export const mockNRTConfig: NRTConfig = {
   id: 'config-1',
+  sessionId: 'session-1',
   enabled: true,
   mode: NRTMode.OnDevice,
   targetFps: 60,
