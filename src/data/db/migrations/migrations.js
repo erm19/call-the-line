@@ -3,7 +3,7 @@
 import journal from './meta/_journal.json';
 import m0000 from './0000_serious_screwball.sql';
 
-export default {
+export const migrations = {
   journal,
   migrations: {
     m0000,
