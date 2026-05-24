@@ -26,7 +26,7 @@ Poll for result status.
 {
   "jobId": "string",
   "status": "complete",
-  "decision": "in" | "out" | "uncertain",
+  "outcome": "in" | "out" | "uncertain",
   "confidence": number,  // 0.0–1.0
   "boundingBox": { "x": number, "y": number, "w": number, "h": number } | null,
   "courtPosition": { "x": number, "y": number } | null,  // normalized 0–1
