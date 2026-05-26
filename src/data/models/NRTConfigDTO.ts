@@ -3,6 +3,7 @@
  */
 export interface NRTConfigDTO {
   id: string;
+  session_id: string;
   enabled: boolean;
   mode: string;
   target_fps: number;

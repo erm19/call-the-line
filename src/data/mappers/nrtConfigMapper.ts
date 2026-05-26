@@ -7,6 +7,7 @@ import { NRTConfigDTO } from '../models/NRTConfigDTO';
 export const nrtConfigFromDTO = (dto: NRTConfigDTO): NRTConfig => {
   return {
     id: dto.id,
+    sessionId: dto.session_id,
     enabled: dto.enabled,
     mode: dto.mode as NRTMode,
     targetFps: dto.target_fps,
@@ -29,6 +30,7 @@ export const nrtConfigFromDTO = (dto: NRTConfigDTO): NRTConfig => {
 export const nrtConfigToDTO = (config: NRTConfig): NRTConfigDTO => {
   return {
     id: config.id,
+    session_id: config.sessionId,
     enabled: config.enabled,
     mode: config.mode,
     target_fps: config.targetFps,

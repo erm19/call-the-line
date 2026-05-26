@@ -28,6 +28,11 @@ export interface NRTConfig {
   id: string;
 
   /**
+   * Session this config belongs to
+   */
+  sessionId: string;
+
+  /**
    * Whether NRT is enabled
    */
   enabled: boolean;
