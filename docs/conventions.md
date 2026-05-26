@@ -24,7 +24,15 @@ Repository impls:  PascalCase.ts           (SessionRepository.ts under /data)
 ViewModels:        PascalCaseViewModel.ts  (HomeViewModel.ts)
 Screens:           PascalCaseScreen.tsx    (HomeScreen.tsx)
 Components:        PascalCase.tsx          (Button.tsx)
+Component styles:  PascalCase.styles.ts    (Button.styles.ts)
 Hooks:             useCamelCase.ts         (useSession.ts)
 Stores:            camelCaseStore.ts       (sessionStore.ts)
 Tests:             *.test.ts
 ```
+
+## Component styles
+
+- Every component that has styles **must** keep them in a co-located `PascalCase.styles.ts` file
+- The styles file exports a named `styles` constant (`StyleSheet.create(...)`) and any style-related constants (e.g. `POINT_SIZE`) the component needs
+- The component file must **not** contain a `StyleSheet.create(...)` call — import `styles` from the `.styles.ts` file instead
+- Style-only constants that are used only in layout arithmetic (sizes, thicknesses) belong in the styles file, not in `consts.ts`
