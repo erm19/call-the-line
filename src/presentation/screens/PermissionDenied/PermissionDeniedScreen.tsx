@@ -1,12 +1,14 @@
-import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { Linking } from 'react-native';
+import React, { useMemo } from 'react';
+import { View, Text, Pressable, StyleSheet } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../../navigation/types';
 import { t } from '../../i18n';
 import { colors } from '../../theme/colors';
-import { spacing } from '../../theme/spacing';
+import { spacing, borderRadius } from '../../theme/spacing';
 import { typography } from '../../theme/typography';
+import { PermissionDeniedViewModel } from './PermissionDeniedViewModel';
+import { diContainer, DI_TOKENS } from '@core/di/container';
+import type { IPermissionService } from '@domain/services/IPermissionService';
 
 type PermissionDeniedNavigationProp = StackNavigationProp<RootStackParamList, 'PermissionDenied'>;
 
@@ -14,16 +16,16 @@ interface Props {
   navigation: PermissionDeniedNavigationProp;
 }
 
-const handleOpenSettings = (): void => {
-  void Linking.openSettings();
-};
-
-/**
- * PermissionDeniedScreen
- * Educates users on why camera permission is needed and provides
- * a deep link to the system settings to grant it.
- */
 export const PermissionDeniedScreen: React.FC<Props> = ({ navigation }) => {
+  const viewModel = useMemo(() => {
+    const permissionService = diContainer.resolve<IPermissionService>(DI_TOKENS.PermissionService);
+    return new PermissionDeniedViewModel(permissionService);
+  }, []);
+
+  const handleOpenSettings = (): void => {
+    void viewModel.openSettings();
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.content}>
@@ -33,13 +35,13 @@ export const PermissionDeniedScreen: React.FC<Props> = ({ navigation }) => {
       </View>
 
       <View style={styles.actions}>
-        <TouchableOpacity style={styles.primaryButton} onPress={handleOpenSettings}>
+        <Pressable style={styles.primaryButton} onPress={handleOpenSettings}>
           <Text style={styles.primaryButtonText}>{t('permissionDenied.openSettings')}</Text>
-        </TouchableOpacity>
+        </Pressable>
 
-        <TouchableOpacity style={styles.secondaryButton} onPress={() => navigation.goBack()}>
-          <Text style={styles.secondaryButtonText}>{t('permissionDenied.back')}</Text>
-        </TouchableOpacity>
+        <Pressable style={styles.secondaryButton} onPress={() => navigation.goBack()}>
+          <Text style={styles.secondaryButtonText}>{t('common.back')}</Text>
+        </Pressable>
       </View>
     </View>
   );
@@ -83,7 +85,7 @@ const styles = StyleSheet.create({
   primaryButton: {
     backgroundColor: colors.primary,
     padding: spacing.lg,
-    borderRadius: 12,
+    borderRadius: borderRadius.lg,
     alignItems: 'center',
   },
   primaryButtonText: {
@@ -94,7 +96,7 @@ const styles = StyleSheet.create({
   secondaryButton: {
     backgroundColor: colors.surface,
     padding: spacing.lg,
-    borderRadius: 12,
+    borderRadius: borderRadius.lg,
     alignItems: 'center',
   },
   secondaryButtonText: {

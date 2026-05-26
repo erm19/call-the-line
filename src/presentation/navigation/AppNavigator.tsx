@@ -2,6 +2,7 @@ import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { RootStackParamList, Routes } from './types';
+import { t } from '../i18n';
 
 // Screen imports - will be implemented
 import HomeScreen from '../screens/Home/HomeScreen';
@@ -16,7 +17,7 @@ const Stack = createStackNavigator<RootStackParamList>();
 /**
  * Main app navigator
  */
-const AppNavigator: React.FC = () => {
+export const AppNavigator: React.FC = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator
@@ -54,11 +55,9 @@ const AppNavigator: React.FC = () => {
         <Stack.Screen
           name={Routes.PermissionDenied}
           component={PermissionDeniedScreen}
-          options={{ title: 'Camera Required' }}
+          options={{ title: t('navigation.permissionDenied') }}
         />
       </Stack.Navigator>
     </NavigationContainer>
   );
 };
-
-export default AppNavigator;

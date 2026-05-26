@@ -12,6 +12,9 @@
     "error": "Error",
     "retry": "Retry"
   },
+  "navigation": {
+    "permissionDenied": "Camera Required"
+  },
   "home": {
     "title": "Call The Line",
     "subtitle": "AI-Powered Tennis Line Calls",
@@ -61,8 +64,7 @@
     "title": "Camera Access Required",
     "body": "Call The Line needs camera access to detect ball bounces and make line calls during your match. Without it, the app cannot function.",
     "instruction": "Please open Settings and enable Camera permission for Call The Line.",
-    "openSettings": "Open Settings",
-    "back": "Go Back"
+    "openSettings": "Open Settings"
   },
   "errors": {
     "generic": "Something went wrong. Please try again.",
