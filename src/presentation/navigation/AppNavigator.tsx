@@ -2,6 +2,7 @@ import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { RootStackParamList, Routes } from './types';
+import { t } from '../i18n';
 
 // Screen imports - will be implemented
 import HomeScreen from '../screens/Home/HomeScreen';
@@ -9,13 +10,14 @@ import CameraScreen from '../screens/Camera/CameraScreen';
 import SessionListScreen from '../screens/Session/SessionListScreen';
 import SessionDetailScreen from '../screens/Session/SessionDetailScreen';
 import ReviewScreen from '../screens/Review/ReviewScreen';
+import { PermissionDeniedScreen } from '../screens/PermissionDenied/PermissionDeniedScreen';
 
 const Stack = createStackNavigator<RootStackParamList>();
 
 /**
  * Main app navigator
  */
-const AppNavigator: React.FC = () => {
+export const AppNavigator: React.FC = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator
@@ -50,9 +52,12 @@ const AppNavigator: React.FC = () => {
           options={{ title: 'Session Details' }}
         />
         <Stack.Screen name={Routes.Review} component={ReviewScreen} options={{ title: 'Review' }} />
+        <Stack.Screen
+          name={Routes.PermissionDenied}
+          component={PermissionDeniedScreen}
+          options={{ title: t('navigation.permissionDenied') }}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );
 };
-
-export default AppNavigator;

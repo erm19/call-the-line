@@ -10,6 +10,7 @@ export type RootStackParamList = {
   Review: { clipId: string };
   Auth: undefined;
   NRTStatus: undefined;
+  PermissionDenied: undefined;
 };
 
 export enum Routes {
@@ -20,4 +21,5 @@ export enum Routes {
   Review = 'Review',
   Auth = 'Auth',
   NRTStatus = 'NRTStatus',
+  PermissionDenied = 'PermissionDenied',
 }

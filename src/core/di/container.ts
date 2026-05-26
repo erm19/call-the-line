@@ -10,9 +10,6 @@ export class DIContainer {
 
   private constructor() {}
 
-  /**
-   * Gets the singleton instance
-   */
   static getInstance(): DIContainer {
     if (!DIContainer.instance) {
       DIContainer.instance = new DIContainer();
@@ -21,7 +18,7 @@ export class DIContainer {
   }
 
   /**
-   * Registers a singleton dependency
+   * Registers a class as a singleton — one instance shared across all resolves.
    */
   registerSingleton<T>(
     token: string | symbol,
@@ -31,7 +28,7 @@ export class DIContainer {
   }
 
   /**
-   * Registers a transient dependency (new instance each time)
+   * Registers a class as transient — a new instance per resolve.
    */
   registerTransient<T>(
     token: string | symbol,
@@ -41,21 +38,21 @@ export class DIContainer {
   }
 
   /**
-   * Registers an instance directly
+   * Registers a pre-constructed instance.
    */
   registerInstance<T>(token: string | symbol, instance: T): void {
     tsyringeContainer.registerInstance(token as never, instance as never);
   }
 
   /**
-   * Resolves a dependency
+   * Resolves a registered dependency by token.
    */
   resolve<T>(token: string | symbol): T {
     return tsyringeContainer.resolve(token as never) as T;
   }
 
   /**
-   * Clears all registrations (useful for testing)
+   * Clears all singleton instances (useful in tests).
    */
   clear(): void {
     tsyringeContainer.clearInstances();
@@ -78,6 +75,7 @@ export const DI_TOKENS = {
   NRTCameraService: Symbol('NRTCameraService'),
   PermissionService: Symbol('PermissionService'),
   FileStorageService: Symbol('FileStorageService'),
+  ClipStorageService: Symbol('ClipStorageService'),
   MotionSensorService: Symbol('MotionSensorService'),
 
   // Data Sources
@@ -98,7 +96,4 @@ export const DI_TOKENS = {
   DB_CLIENT: Symbol('DB_CLIENT'),
 } as const;
 
-/**
- * Export singleton instance
- */
 export const diContainer = DIContainer.getInstance();
