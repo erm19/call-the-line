@@ -1,7 +1,5 @@
 import 'reflect-metadata';
 import { container as tsyringeContainer } from 'tsyringe';
-import { PermissionService } from '@platform/permissions/PermissionService';
-import { FileStorageService } from '@platform/storage/FileStorageService';
 
 /**
  * Dependency Injection Container
@@ -19,6 +17,9 @@ export class DIContainer {
     return DIContainer.instance;
   }
 
+  /**
+   * Registers a class as a singleton — one instance shared across all resolves.
+   */
   registerSingleton<T>(
     token: string | symbol,
     implementation: new (...args: unknown[]) => T,
@@ -26,6 +27,9 @@ export class DIContainer {
     tsyringeContainer.registerSingleton(token as never, implementation as never);
   }
 
+  /**
+   * Registers a class as transient — a new instance per resolve.
+   */
   registerTransient<T>(
     token: string | symbol,
     implementation: new (...args: unknown[]) => T,
@@ -33,14 +37,23 @@ export class DIContainer {
     tsyringeContainer.register(token as never, implementation as never);
   }
 
+  /**
+   * Registers a pre-constructed instance.
+   */
   registerInstance<T>(token: string | symbol, instance: T): void {
     tsyringeContainer.registerInstance(token as never, instance as never);
   }
 
+  /**
+   * Resolves a registered dependency by token.
+   */
   resolve<T>(token: string | symbol): T {
     return tsyringeContainer.resolve(token as never) as T;
   }
 
+  /**
+   * Clears all singleton instances (useful in tests).
+   */
   clear(): void {
     tsyringeContainer.clearInstances();
   }
@@ -62,6 +75,7 @@ export const DI_TOKENS = {
   NRTCameraService: Symbol('NRTCameraService'),
   PermissionService: Symbol('PermissionService'),
   FileStorageService: Symbol('FileStorageService'),
+  ClipStorageService: Symbol('ClipStorageService'),
   MotionSensorService: Symbol('MotionSensorService'),
 
   // Data Sources
@@ -80,6 +94,3 @@ export const DI_TOKENS = {
 } as const;
 
 export const diContainer = DIContainer.getInstance();
-
-diContainer.registerSingleton(DI_TOKENS.PermissionService, PermissionService);
-diContainer.registerSingleton(DI_TOKENS.FileStorageService, FileStorageService);
