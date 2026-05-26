@@ -5,7 +5,7 @@ import { useMigrations } from 'drizzle-orm/expo-sqlite/migrator';
 import { createDbClient } from './data/db/client';
 import { registerDbClient } from './data/db/register';
 import { migrations } from './data/db/migrations/migrations';
-import AppNavigator from './presentation/navigation/AppNavigator';
+import { AppNavigator } from './presentation/navigation/AppNavigator';
 
 const db = createDbClient();
 registerDbClient(db);
@@ -35,5 +35,3 @@ const App: React.FC = () => {
     </SafeAreaProvider>
   );
 };
-
-export default App;
