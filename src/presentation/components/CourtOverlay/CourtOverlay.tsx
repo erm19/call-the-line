@@ -1,9 +1,8 @@
 import React from 'react';
-import { View, Text, StyleSheet, Pressable } from 'react-native';
+import { View, Text, Pressable } from 'react-native';
 import { Point2D } from '@domain/entities/CourtCalibration';
-import { colors } from '../../theme/colors';
-import { typography } from '../../theme/typography';
 import { t } from '../../i18n';
+import { styles, POINT_SIZE, LINE_THICKNESS } from './CourtOverlay.styles';
 
 interface CourtOverlayProps {
   width: number;
@@ -13,8 +12,6 @@ interface CourtOverlayProps {
   onPointTap?: (x: number, y: number) => void;
 }
 
-const POINT_SIZE = 24;
-const LINE_THICKNESS = 2;
 const MAX_POINTS = 4;
 const CORNER_LABELS = ['top-left', 'top-right', 'bottom-right', 'bottom-left'] as const;
 
@@ -111,33 +108,3 @@ const CourtLine: React.FC<{ from: Point2D; to: Point2D }> = ({ from, to }) => {
     />
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    backgroundColor: 'transparent',
-  },
-  point: {
-    position: 'absolute',
-    width: POINT_SIZE,
-    height: POINT_SIZE,
-    borderRadius: POINT_SIZE / 2,
-    backgroundColor: colors.error,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 2,
-    borderColor: colors.white,
-  },
-  pointLabel: {
-    color: colors.white,
-    fontSize: typography.fontSize.xs,
-    fontWeight: typography.fontWeight.bold,
-  },
-  line: {
-    position: 'absolute',
-    height: LINE_THICKNESS,
-    backgroundColor: colors.secondary,
-  },
-});
