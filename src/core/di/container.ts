@@ -106,7 +106,7 @@ export const DI_TOKENS = {
  * @see src/domain/di/registerUseCases.ts
  */
   // Database
-  DB_CLIENT: Symbol('DB_CLIENT'),
+  DbClient: Symbol('DbClient'),
 } as const;
 
 export const diContainer = DIContainer.getInstance();
