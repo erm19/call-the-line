@@ -10,9 +10,9 @@ End-of-session instructions:
 
 ## Current Status
 
-**Phase:** Phase 1 (Core Session Flow) — task 1.0a complete
+**Phase:** Phase 1–2 — Wave 1 complete; 13 tasks done
 
-**Next task:** `1.0b` — Define Drizzle schema (`src/data/db/schema.ts`)
+**Next task:** Wave 2 — merge all Wave 1 branches into main, then run `/implement-task wave` again
 
 ---
 
@@ -60,6 +60,44 @@ End-of-session instructions:
 
 **Next session start point:**
 > Phase 1, task 1.0b: Create `src/data/db/schema.ts` with Drizzle table definitions for `sessions`, `clips`, `calibrations`, `aiResults`, `nrtConfigs`.
+
+---
+
+### Session 3 — 2026-05-24
+
+**Wave:** Wave 1 — branches: feat/db-foundation, feat/session-use-cases, feat/platform-services, feat/standalone-ui
+
+**Done:**
+- Task 1.0b: Drizzle schema defined — 5 tables (sessions, clips, calibrations, ai_results, nrt_configs) with FK relations (branch: feat/db-foundation)
+- Task 1.0c: Initial migration generated, `db` client singleton created, `DB_CLIENT` token registered in DI container (branch: feat/db-foundation)
+- Task 1.1: StartSession use case body implemented — already present in scaffold, verified correct (branch: feat/session-use-cases)
+- Task 1.2: EndSession use case body implemented — already present in scaffold, verified correct (branch: feat/session-use-cases)
+- Task 1.3: GetSessions use case body implemented — already present in scaffold, verified correct (branch: feat/session-use-cases)
+- Task 1.12: i18n keys for all session UI strings added to en.json (branch: feat/standalone-ui)
+- Task 1.13: Unit tests for StartSession, EndSession, GetSessions — 19 tests passing (branch: feat/session-use-cases)
+- Task 2.1: PermissionService implemented using react-native-vision-camera static Camera methods (branch: feat/platform-services)
+- Task 2.3: FileStorageService implemented using RNFS/react-native file APIs (branch: feat/platform-services)
+- Task 2.9: PermissionDeniedScreen created with "Open Settings" deep link, wired into navigator (branch: feat/platform-services)
+- Task 2.11: VideoPlayer component created (placeholder — react-native-video not in deps) (branch: feat/standalone-ui)
+- Task 2.12: i18n keys for camera UI strings added (branch: feat/standalone-ui)
+- Task 3.4: CourtOverlay component created — View-based (react-native-svg not in deps), supports tap-to-calibrate (branch: feat/standalone-ui)
+- Task 3.8: i18n keys for calibration UI added (branch: feat/standalone-ui)
+- Task 4.1: API contract documented at docs/api-contract.md (branch: feat/standalone-ui)
+
+**Key decisions:**
+- Schema uses INTEGER for timestamps (Unix epoch ms) matching migration — not TEXT ISO strings
+- react-native-svg not in deps → CourtOverlay uses absolute-positioned Views; react-native-video not in deps → VideoPlayer is a placeholder
+- Use cases 1.1–1.3 were already fully implemented in the scaffold; task 1.13 added the missing unit tests
+- PermissionService registration uses `DI_TOKENS` (not `TOKENS`) — that's the actual name in container.ts
+- DB schema kept simple (no domain entity imports) to avoid data layer → domain coupling
+
+**Blockers / open questions:**
+- react-native-svg and react-native-video not installed — CourtOverlay and VideoPlayer are stubs; install when Phase 2/3 UI work begins
+- Native iOS/Android dirs still not set up — expo-sqlite needs pod install before running on device
+
+**Next session start point:**
+> Merge all Wave 1 branches into main, then run `/implement-task wave` for Wave 2.
+> Wave 2 branches: feat/session-data-layer (needs db-foundation), feat/session-store (needs session-use-cases), feat/session-list-detail (needs session-use-cases), feat/camera-core (needs platform-services).
 
 ---
 

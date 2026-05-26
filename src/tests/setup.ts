@@ -3,7 +3,7 @@
  * Run before each test suite
  */
 
-// Required by tsyringe for @injectable() / @inject() decorator support
+// Required by tsyringe for dependency injection decorators
 import 'reflect-metadata';
 
 // Mock expo-sqlite (native module — JSI boundary)

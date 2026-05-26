@@ -77,11 +77,11 @@ Standalones (no deps): 1.12, 2.1, 2.3, 2.9, 2.11, 2.12, 3.4, 3.8, 4.1, 5.1
 Goal: create/list/view sessions end-to-end with persistent storage.
 
 - [x] **1.0a** Install `expo-sqlite` + `drizzle-orm` + `drizzle-kit`; add `drizzle.config.ts`; update `babel.config.js` for JSI; remove `@react-native-async-storage/async-storage`
-- [ ] **1.0b** Define Drizzle schema (`src/data/db/schema.ts`) — `sessions`, `clips`, `calibrations`, `aiResults`, `nrtConfigs` tables with all columns and relations
-- [ ] **1.0c** Generate initial migration (`src/data/db/migrations/`); create `db` client singleton (`src/data/db/client.ts`); register `DB_CLIENT` token in DI container
-- [ ] **1.1** Implement `StartSession` use case body — generate ID, set timestamps, persist via `SessionRepository`
-- [ ] **1.2** Implement `EndSession` use case body — update status and `endedAt`, persist
-- [ ] **1.3** Implement `GetSessions` use case body — fetch all sessions ordered by `createdAt` desc
+- [x] **1.0b** Define Drizzle schema (`src/data/db/schema.ts`) — `sessions`, `clips`, `calibrations`, `aiResults`, `nrtConfigs` tables with all columns and relations
+- [x] **1.0c** Generate initial migration (`src/data/db/migrations/`); create `db` client singleton (`src/data/db/client.ts`); register `DB_CLIENT` token in DI container
+- [x] **1.1** Implement `StartSession` use case body — generate ID, set timestamps, persist via `SessionRepository`
+- [x] **1.2** Implement `EndSession` use case body — update status and `endedAt`, persist
+- [x] **1.3** Implement `GetSessions` use case body — fetch all sessions ordered by `createdAt` desc
 - [ ] **1.4** Implement `SessionLocalDataSource` — Drizzle CRUD on `sessions` table: `insert`, `findById`, `findAll` (ordered by `createdAt` desc), `update`, `delete`
 - [ ] **1.5** Implement `SessionRepositoryImpl` — wire local data source, map DTOs ↔ entities
 - [ ] **1.6** Create `sessionStore.ts` (Zustand) — sessions list, active session, loading/error state
@@ -90,8 +90,8 @@ Goal: create/list/view sessions end-to-end with persistent storage.
 - [ ] **1.9** Create `SessionListScreen` ViewModel — load sessions on mount, expose list + delete action
 - [ ] **1.10** Implement `SessionListScreen.tsx` — flat list of sessions with date/status
 - [ ] **1.11** Implement `SessionDetailScreen.tsx` — show session metadata and clips list
-- [ ] **1.12** Add i18n keys for all session UI strings
-- [ ] **1.13** Unit tests: StartSession, EndSession, GetSessions use cases
+- [x] **1.12** Add i18n keys for all session UI strings
+- [x] **1.13** Unit tests: StartSession, EndSession, GetSessions use cases
 - [ ] **1.14** Unit tests: `SessionLocalDataSource` — mock the Drizzle `db` client; verify query calls for each CRUD operation
 - [ ] **1.15** Integration test: `SessionRepositoryImpl` — in-memory SQLite via `expo-sqlite` test helper; no mocks for repo logic
 
@@ -101,18 +101,18 @@ Goal: create/list/view sessions end-to-end with persistent storage.
 
 Goal: user can record a clip and it's saved to the session.
 
-- [ ] **2.1** Implement `PermissionService` — camera + microphone permission request and status check
+- [x] **2.1** Implement `PermissionService` — camera + microphone permission request and status check
 - [ ] **2.2** Implement `CameraService` — start/stop standard recording using vision-camera, return file path
-- [ ] **2.3** Implement `FileStorageService` — save/delete/list clip files in app-private storage
+- [x] **2.3** Implement `FileStorageService` — save/delete/list clip files in app-private storage
 - [ ] **2.4** Implement `RecordClip` use case body — orchestrate CameraService + ClipRepository
 - [ ] **2.5** Implement `ClipLocalDataSource` — Drizzle CRUD on `clips` table; include `findBySessionId` query
 - [ ] **2.6** Implement `ClipRepositoryImpl` — wire local data source + file storage, map Drizzle rows ↔ entities
 - [ ] **2.7** Create `CameraViewModel.ts` — recording state machine: idle → recording → saving → done
 - [ ] **2.8** Implement `CameraScreen.tsx` — vision-camera preview, record button, permission denied state
-- [ ] **2.9** Add permission-denied educative screen with "Open Settings" deep link
+- [x] **2.9** Add permission-denied educative screen with "Open Settings" deep link
 - [ ] **2.10** Lock orientation to landscape in camera screen
-- [ ] **2.11** Add `VideoPlayer` component for clip playback
-- [ ] **2.12** Add i18n keys for camera UI strings
+- [x] **2.11** Add `VideoPlayer` component for clip playback
+- [x] **2.12** Add i18n keys for camera UI strings
 - [ ] **2.13** Unit tests: RecordClip use case
 - [ ] **2.14** Unit tests: CameraViewModel state transitions
 - [ ] **2.15** Integration test: `ClipRepositoryImpl` — in-memory SQLite
@@ -126,11 +126,11 @@ Goal: user can calibrate court geometry once per session; it persists.
 - [ ] **3.1** Implement `CalibrationLocalDataSource` — Drizzle CRUD on `calibrations` table; `findBySessionId` query
 - [ ] **3.2** Implement `CalibrationRepositoryImpl` — wire local data source, map Drizzle rows ↔ entities
 - [ ] **3.3** Implement `SaveCalibration` use case body — validate + persist calibration
-- [ ] **3.4** Create `CourtOverlay` component — SVG overlay showing court lines and calibration points
+- [x] **3.4** Create `CourtOverlay` component — SVG overlay showing court lines and calibration points
 - [ ] **3.5** Create calibration screen — tap-to-place 4 court corner points on live camera preview
 - [ ] **3.6** Create `CalibrationViewModel.ts` — track point placement state, validate 4-point input
 - [ ] **3.7** Wire calibration into Camera flow — prompt on first session start if not calibrated
-- [ ] **3.8** Add i18n keys for calibration UI
+- [x] **3.8** Add i18n keys for calibration UI
 - [ ] **3.9** Unit tests: SaveCalibration use case
 - [ ] **3.10** Unit tests: CalibrationViewModel
 
@@ -140,7 +140,7 @@ Goal: user can calibrate court geometry once per session; it persists.
 
 Goal: user can submit a recorded clip and see the AI line call result.
 
-- [ ] **4.1** Define stable API contract — document `/v1/detect-out` request/response shape
+- [x] **4.1** Define stable API contract — document `/v1/detect-out` request/response shape
 - [ ] **4.2** Implement `AIReviewRemoteDataSource` — POST clip, poll for result with exponential backoff
 - [ ] **4.3** Implement `AIReviewRepositoryImpl` — wire remote data source, map DTOs ↔ entities
 - [ ] **4.4** Implement `SubmitClipForAI` use case body — validate clip, upload, store pending result

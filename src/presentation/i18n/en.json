@@ -12,6 +12,9 @@
     "error": "Error",
     "retry": "Retry"
   },
+  "navigation": {
+    "permissionDenied": "Camera Required"
+  },
   "home": {
     "title": "Call The Line",
     "subtitle": "AI-Powered Tennis Line Calls",
@@ -25,7 +28,11 @@
     "stop": "Stop",
     "calibrate": "Calibrate Court",
     "nrtEnabled": "Live Tracking Enabled",
-    "nrtDisabled": "Live Tracking Disabled"
+    "nrtDisabled": "Live Tracking Disabled",
+    "saving": "Saving...",
+    "permissionDeniedTitle": "Camera Access Required",
+    "permissionDeniedMessage": "Call The Line needs camera access to record clips for line call analysis.",
+    "openSettings": "Open Settings"
   },
   "sessions": {
     "title": "Sessions",
@@ -34,6 +41,31 @@
     "active": "Active",
     "completed": "Completed",
     "clips": "{{count}} clips"
+  },
+  "session": {
+    "startButton": "Start Session",
+    "deleteConfirmTitle": "Delete Session",
+    "deleteConfirmMessage": "This will permanently delete the session and all its clips.",
+    "status": {
+      "ended": "Ended"
+    },
+    "clips": "Clips",
+    "noClips": "No clips recorded",
+    "startedAt": "Started",
+    "duration": "Duration"
+  },
+  "calibration": {
+    "title": "Court Calibration",
+    "instruction": "Tap the 4 corners of the court in order",
+    "cornerLabels": {
+      "topLeft": "Top Left",
+      "topRight": "Top Right",
+      "bottomRight": "Bottom Right",
+      "bottomLeft": "Bottom Left"
+    },
+    "confirm": "Confirm Calibration",
+    "reset": "Reset",
+    "tapPrompt": "Tap corner {{count}} of 4"
   },
   "review": {
     "title": "Review",
@@ -44,6 +76,10 @@
     "uncertain": "UNCERTAIN",
     "processing": "Processing...",
     "submitForAI": "Submit for AI Review"
+  },
+  "videoPlayer": {
+    "comingSoon": "Video Playback (Coming Soon)",
+    "close": "Close"
   },
   "permissions": {
     "camera": {
@@ -56,6 +92,12 @@
       "message": "We need access to storage to save your recordings.",
       "denied": "Storage permission was denied. Please enable it in settings."
     }
+  },
+  "permissionDenied": {
+    "title": "Camera Access Required",
+    "body": "Call The Line needs camera access to detect ball bounces and make line calls during your match. Without it, the app cannot function.",
+    "instruction": "Please open Settings and enable Camera permission for Call The Line.",
+    "openSettings": "Open Settings"
   },
   "errors": {
     "generic": "Something went wrong. Please try again.",
