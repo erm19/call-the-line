@@ -92,6 +92,19 @@ export const DI_TOKENS = {
   // API Client
   ApiClient: Symbol('ApiClient'),
 
+  // Use Cases
+  StartSession: Symbol('StartSession'),
+  EndSession: Symbol('EndSession'),
+  GetSessions: Symbol('GetSessions'),
+/**
+ * Export singleton instance
+ *
+ * Concrete implementations are registered via bootstrap functions
+ * called from App.tsx — never import implementations here so that
+ * core remains dependency-free and tests avoid circular references.
+ *
+ * @see src/domain/di/registerUseCases.ts
+ */
   // Database
   DB_CLIENT: Symbol('DB_CLIENT'),
 } as const;

@@ -1,22 +1,20 @@
-import { Result } from '@core/utils/result';
+import { injectable, inject } from 'tsyringe';
 import { AppError } from '@core/errors/AppError';
+import { Result } from '@core/utils/result';
+import { DI_TOKENS } from '@core/di/container';
 import { Session } from '../entities/Session';
-import { ISessionRepository } from '../repositories/SessionRepository';
+import type { ISessionRepository } from '../repositories/SessionRepository';
 
-/**
- * Input for GetSessions use case
- */
 export interface GetSessionsInput {
   limit?: number;
   offset?: number;
 }
 
-/**
- * GetSessions Use Case
- * Retrieves all sessions with optional pagination
- */
+@injectable()
 export class GetSessions {
-  constructor(private readonly sessionRepository: ISessionRepository) {}
+  constructor(
+    @inject(DI_TOKENS.SessionRepository) private readonly sessionRepository: ISessionRepository,
+  ) {}
 
   async execute(input: GetSessionsInput = {}): Promise<Result<Session[], AppError>> {
     return this.sessionRepository.getAll(input);

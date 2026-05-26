@@ -1,20 +1,18 @@
-import { Result } from '@core/utils/result';
-import { AppError, NotFoundError } from '@core/errors/AppError';
-import { Session, SessionStatus } from '../entities/Session';
-import { ISessionRepository } from '../repositories/SessionRepository';
-import { getCurrentISOString } from '@core/utils/date';
-import { IAnalyticsService } from '@core/analytics/AnalyticsService';
+import { injectable, inject } from 'tsyringe';
+import type { IAnalyticsService } from '@core/analytics/AnalyticsService';
 import { ANALYTICS_CONSTANTS } from '@core/config/constants';
-import { failure } from '@core/utils/result';
+import { AppError, ValidationError } from '@core/errors/AppError';
+import { getCurrentISOString } from '@core/utils/date';
+import { Result, failure } from '@core/utils/result';
+import { DI_TOKENS } from '@core/di/container';
+import { Session, SessionStatus } from '../entities/Session';
+import type { ISessionRepository } from '../repositories/SessionRepository';
 
-/**
- * EndSession Use Case
- * Ends an active session
- */
+@injectable()
 export class EndSession {
   constructor(
-    private readonly sessionRepository: ISessionRepository,
-    private readonly analyticsService: IAnalyticsService,
+    @inject(DI_TOKENS.SessionRepository) private readonly sessionRepository: ISessionRepository,
+    @inject(DI_TOKENS.AnalyticsService) private readonly analyticsService: IAnalyticsService,
   ) {}
 
   async execute(sessionId: string): Promise<Result<Session, AppError>> {
@@ -27,7 +25,7 @@ export class EndSession {
     const session = sessionResult.value;
 
     if (session.status === SessionStatus.Completed) {
-      return failure(new NotFoundError('Session is already completed'));
+      return failure(new ValidationError('Session is already completed'));
     }
 
     const result = await this.sessionRepository.update(sessionId, {
@@ -41,7 +39,8 @@ export class EndSession {
         properties: {
           sessionId,
           clipCount: session.clipIds.length,
-          duration: Date.now() - new Date(session.startedAt).getTime(),
+          duration:
+            new Date(getCurrentISOString()).getTime() - new Date(session.startedAt).getTime(),
         },
       });
     }
