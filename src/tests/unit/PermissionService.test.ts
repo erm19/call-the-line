@@ -1,8 +1,5 @@
-import {
-  PermissionService,
-  Permission,
-  PermissionStatus,
-} from '@platform/permissions/PermissionService';
+import { PermissionService } from '@platform/permissions/PermissionService';
+import { Permission, PermissionStatus } from '@domain/services/IPermissionService';
 
 // Mock react-native-vision-camera at the module boundary
 jest.mock('react-native-vision-camera', () => ({
