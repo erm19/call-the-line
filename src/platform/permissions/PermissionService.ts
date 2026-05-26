@@ -1,39 +1,14 @@
+import { injectable } from 'tsyringe';
+import { Camera as VisionCamera } from 'react-native-vision-camera';
 import { Linking } from 'react-native';
-import { Camera } from 'react-native-vision-camera';
-import { success, failure, Result } from '@core/utils/result';
+import { success, failure } from '@core/utils/result';
 import { PermissionError } from '@core/errors/AppError';
-
-/**
- * Permission types
- */
-export enum Permission {
-  Camera = 'camera',
-  Microphone = 'microphone',
-  Storage = 'storage',
-}
-
-/**
- * Permission status
- */
-export enum PermissionStatus {
-  Granted = 'granted',
-  Denied = 'denied',
-  NotDetermined = 'not_determined',
-  Restricted = 'restricted',
-}
-
-/**
- * Permission Service Interface
- * Handles permission requests and status checks
- */
-export interface IPermissionService {
-  checkPermission(permission: Permission): Promise<Result<PermissionStatus, PermissionError>>;
-  requestPermission(permission: Permission): Promise<Result<PermissionStatus, PermissionError>>;
-  requestPermissions(
-    permissions: Permission[],
-  ): Promise<Result<Record<Permission, PermissionStatus>, PermissionError>>;
-  openSettings(): Promise<Result<void, PermissionError>>;
-}
+import type { Result } from '@core/utils/result';
+import {
+  Permission,
+  PermissionStatus,
+  type IPermissionService,
+} from '@domain/services/IPermissionService';
 
 const toCameraPermissionStatus = (raw: string): PermissionStatus => {
   switch (raw) {
@@ -51,16 +26,16 @@ const toCameraPermissionStatus = (raw: string): PermissionStatus => {
 const checkCameraOrMic = (permission: Permission): PermissionStatus => {
   const raw =
     permission === Permission.Camera
-      ? Camera.getCameraPermissionStatus()
-      : Camera.getMicrophonePermissionStatus();
+      ? VisionCamera.getCameraPermissionStatus()
+      : VisionCamera.getMicrophonePermissionStatus();
   return toCameraPermissionStatus(raw);
 };
 
 const requestCameraOrMic = async (permission: Permission): Promise<PermissionStatus> => {
   const raw =
     permission === Permission.Camera
-      ? await Camera.requestCameraPermission()
-      : await Camera.requestMicrophonePermission();
+      ? await VisionCamera.requestCameraPermission()
+      : await VisionCamera.requestMicrophonePermission();
   return toCameraPermissionStatus(raw);
 };
 
@@ -69,6 +44,7 @@ const requestCameraOrMic = async (permission: Permission): Promise<PermissionSta
  * Uses react-native-vision-camera for camera/microphone permissions
  * and React Native Linking for opening system settings.
  */
+@injectable()
 export class PermissionService implements IPermissionService {
   async checkPermission(
     permission: Permission,
@@ -79,7 +55,8 @@ export class PermissionService implements IPermissionService {
       }
       return success(checkCameraOrMic(permission));
     } catch (e) {
-      return failure(new PermissionError('Failed to check permission', permission));
+      const msg = e instanceof Error ? e.message : String(e);
+      return failure(new PermissionError(`Failed to check permission: ${msg}`, permission));
     }
   }
 
@@ -93,7 +70,8 @@ export class PermissionService implements IPermissionService {
       const status = await requestCameraOrMic(permission);
       return success(status);
     } catch (e) {
-      return failure(new PermissionError('Failed to request permission', permission));
+      const msg = e instanceof Error ? e.message : String(e);
+      return failure(new PermissionError(`Failed to request permission: ${msg}`, permission));
     }
   }
 
@@ -118,7 +96,8 @@ export class PermissionService implements IPermissionService {
       await Linking.openSettings();
       return success(undefined);
     } catch (e) {
-      return failure(new PermissionError('Failed to open settings', 'settings'));
+      const msg = e instanceof Error ? e.message : String(e);
+      return failure(new PermissionError(`Failed to open settings: ${msg}`, 'settings'));
     }
   }
 }
