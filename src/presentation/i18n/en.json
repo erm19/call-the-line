@@ -29,13 +29,10 @@
     "calibrate": "Calibrate Court",
     "nrtEnabled": "Live Tracking Enabled",
     "nrtDisabled": "Live Tracking Disabled",
-    "recordButton": "Record",
-    "stopButton": "Stop",
     "saving": "Saving...",
     "permissionDeniedTitle": "Camera Access Required",
     "permissionDeniedMessage": "Call The Line needs camera access to record clips for line call analysis.",
-    "openSettings": "Open Settings",
-    "back": "Back"
+    "openSettings": "Open Settings"
   },
   "sessions": {
     "title": "Sessions",
@@ -47,13 +44,9 @@
   },
   "session": {
     "startButton": "Start Session",
-    "noSessions": "No sessions yet",
     "deleteConfirmTitle": "Delete Session",
     "deleteConfirmMessage": "This will permanently delete the session and all its clips.",
-    "deleteConfirm": "Delete",
-    "deleteCancel": "Cancel",
     "status": {
-      "active": "Active",
       "ended": "Ended"
     },
     "clips": "Clips",
@@ -72,7 +65,7 @@
     },
     "confirm": "Confirm Calibration",
     "reset": "Reset",
-    "tapPrompt": "Tap corner {{n}} of 4"
+    "tapPrompt": "Tap corner {{count}} of 4"
   },
   "review": {
     "title": "Review",
@@ -83,6 +76,10 @@
     "uncertain": "UNCERTAIN",
     "processing": "Processing...",
     "submitForAI": "Submit for AI Review"
+  },
+  "videoPlayer": {
+    "comingSoon": "Video Playback (Coming Soon)",
+    "close": "Close"
   },
   "permissions": {
     "camera": {

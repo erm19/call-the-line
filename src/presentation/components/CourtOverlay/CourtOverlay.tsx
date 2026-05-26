@@ -1,23 +1,14 @@
 import React from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableWithoutFeedback,
-  GestureResponderEvent,
-} from 'react-native';
+import { View, Text, StyleSheet, Pressable } from 'react-native';
+import { Point2D } from '@domain/entities/CourtCalibration';
 import { colors } from '../../theme/colors';
 import { typography } from '../../theme/typography';
-
-interface CalibrationPoint {
-  x: number;
-  y: number;
-}
+import { t } from '../../i18n';
 
 interface CourtOverlayProps {
   width: number;
   height: number;
-  calibrationPoints?: CalibrationPoint[];
+  calibrationPoints?: Point2D[];
   showLines?: boolean;
   onPointTap?: (x: number, y: number) => void;
 }
@@ -25,13 +16,19 @@ interface CourtOverlayProps {
 const POINT_SIZE = 24;
 const LINE_THICKNESS = 2;
 const MAX_POINTS = 4;
+const CORNER_LABELS = ['top-left', 'top-right', 'bottom-right', 'bottom-left'] as const;
 
-const renderLineSegments = (points: CalibrationPoint[]): React.ReactNode => {
+const CourtLineSegments: React.FC<{ points: Point2D[] }> = ({ points }) => {
   if (points.length < MAX_POINTS) return null;
-  return points.map((point, index) => {
-    const next = points[(index + 1) % points.length];
-    return <CourtLine key={`line-${index}`} from={point} to={next} />;
-  });
+  return (
+    <>
+      {points.map((point, index) => {
+        const next = points[(index + 1) % points.length];
+        const label = CORNER_LABELS[index];
+        return <CourtLine key={`line-${label}`} from={point} to={next} />;
+      })}
+    </>
+  );
 };
 
 /**
@@ -48,27 +45,36 @@ export const CourtOverlay: React.FC<CourtOverlayProps> = ({
   showLines = false,
   onPointTap,
 }) => {
-  const handlePress = (event: GestureResponderEvent) => {
-    if (!onPointTap) return;
-    const { locationX, locationY } = event.nativeEvent;
-    onPointTap(locationX, locationY);
-  };
-
   const visiblePoints = calibrationPoints.slice(0, MAX_POINTS);
 
   return (
-    <TouchableWithoutFeedback onPress={handlePress} testID="court-overlay">
-      <View style={[styles.container, { width, height }]} pointerEvents="box-only">
-        {showLines ? renderLineSegments(visiblePoints) : null}
-        {visiblePoints.map((point, index) => (
-          <CourtPoint key={`point-${index}`} index={index} point={point} />
-        ))}
-      </View>
-    </TouchableWithoutFeedback>
+    <Pressable
+      onPress={e => {
+        if (!onPointTap) return;
+        onPointTap(e.nativeEvent.locationX, e.nativeEvent.locationY);
+      }}
+      testID="court-overlay"
+      accessibilityLabel={t('calibration.instruction')}
+      accessibilityRole="button"
+      style={[styles.container, { width, height }]}>
+      {showLines ? <CourtLineSegments points={visiblePoints} /> : null}
+      {visiblePoints.map((point, index) => (
+        <CourtPoint
+          key={CORNER_LABELS[index]}
+          index={index}
+          point={point}
+          cornerLabel={CORNER_LABELS[index]}
+        />
+      ))}
+    </Pressable>
   );
 };
 
-const CourtPoint: React.FC<{ index: number; point: CalibrationPoint }> = ({ index, point }) => (
+const CourtPoint: React.FC<{ index: number; point: Point2D; cornerLabel: string }> = ({
+  index,
+  point,
+  cornerLabel,
+}) => (
   <View
     style={[
       styles.point,
@@ -77,12 +83,13 @@ const CourtPoint: React.FC<{ index: number; point: CalibrationPoint }> = ({ inde
         top: point.y - POINT_SIZE / 2,
       },
     ]}
-    testID={`court-point-${index}`}>
+    testID={`court-point-${index}`}
+    accessibilityLabel={cornerLabel}>
     <Text style={styles.pointLabel}>{index + 1}</Text>
   </View>
 );
 
-const CourtLine: React.FC<{ from: CalibrationPoint; to: CalibrationPoint }> = ({ from, to }) => {
+const CourtLine: React.FC<{ from: Point2D; to: Point2D }> = ({ from, to }) => {
   const dx = to.x - from.x;
   const dy = to.y - from.y;
   const length = Math.sqrt(dx * dx + dy * dy);

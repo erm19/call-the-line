@@ -1,8 +1,9 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, StyleProp, ViewStyle } from 'react-native';
+import { View, Text, StyleSheet, Pressable, StyleProp, ViewStyle } from 'react-native';
 import { colors } from '../../theme/colors';
 import { spacing, borderRadius } from '../../theme/spacing';
 import { typography } from '../../theme/typography';
+import { t } from '../../i18n';
 
 interface VideoPlayerProps {
   uri: string;
@@ -24,19 +25,19 @@ export const VideoPlayer: React.FC<VideoPlayerProps> = ({ uri, onClose, style })
   return (
     <View style={[styles.container, style]} testID="video-player">
       <View style={styles.body}>
-        <Text style={styles.title}>Video Playback (Coming Soon)</Text>
+        <Text style={styles.title}>{t('videoPlayer.comingSoon')}</Text>
         <Text style={styles.uri} numberOfLines={2}>
           {uri}
         </Text>
       </View>
       {onClose ? (
-        <TouchableOpacity
+        <Pressable
           style={styles.closeButton}
           onPress={onClose}
           accessibilityRole="button"
           testID="video-player-close">
-          <Text style={styles.closeText}>Close</Text>
-        </TouchableOpacity>
+          <Text style={styles.closeText}>{t('videoPlayer.close')}</Text>
+        </Pressable>
       ) : null}
     </View>
   );
