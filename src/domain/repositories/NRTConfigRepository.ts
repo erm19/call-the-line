@@ -9,9 +9,9 @@ import { LatencyMetrics } from '../entities/LatencyMetrics';
  */
 export interface INRTConfigRepository {
   /**
-   * Gets current NRT configuration
+   * Gets NRT configuration for the given session
    */
-  getConfig(): Promise<Result<NRTConfig, AppError>>;
+  getConfig(sessionId: string): Promise<Result<NRTConfig, AppError>>;
 
   /**
    * Updates NRT configuration

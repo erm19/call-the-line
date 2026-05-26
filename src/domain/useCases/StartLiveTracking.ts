@@ -14,8 +14,8 @@ export class StartLiveTracking {
     private readonly analyticsService: IAnalyticsService,
   ) {}
 
-  async execute(): Promise<Result<NRTConfig, AppError>> {
-    const configResult = await this.nrtConfigRepository.getConfig();
+  async execute(sessionId: string): Promise<Result<NRTConfig, AppError>> {
+    const configResult = await this.nrtConfigRepository.getConfig(sessionId);
 
     if (configResult.isFailure) {
       return configResult;

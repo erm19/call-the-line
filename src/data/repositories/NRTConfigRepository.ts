@@ -12,9 +12,9 @@ import { nrtConfigFromDTO, nrtConfigToDTO } from '../mappers/nrtConfigMapper';
 export class NRTConfigRepository implements INRTConfigRepository {
   constructor(private readonly localDataSource: NRTConfigLocalDataSource) {}
 
-  async getConfig(): Promise<Result<NRTConfig, StorageError>> {
+  async getConfig(sessionId: string): Promise<Result<NRTConfig, StorageError>> {
     try {
-      const dto = await this.localDataSource.getConfig();
+      const dto = await this.localDataSource.getConfig(sessionId);
       return success(nrtConfigFromDTO(dto));
     } catch (error) {
       return failure(new StorageError('Failed to get NRT config'));

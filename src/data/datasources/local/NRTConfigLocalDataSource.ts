@@ -5,7 +5,7 @@ import { NRTConfigDTO } from '../../models/NRTConfigDTO';
  * Implementation: Drizzle ORM on expo-sqlite (task 1.4 / Phase 5)
  */
 export class NRTConfigLocalDataSource {
-  async getConfig(): Promise<NRTConfigDTO> {
+  async getConfig(_sessionId: string): Promise<NRTConfigDTO> {
     throw new Error('NRTConfigLocalDataSource.getConfig not yet implemented');
   }
 
