@@ -1,22 +1,35 @@
+import { z } from 'zod';
 import { desc, eq } from 'drizzle-orm';
 import type { DbClient } from '../../db/client';
 import { sessions } from '../../db/schema';
 import { SessionDTO } from '../../models/SessionDTO';
+import { SessionStatus } from '@domain/entities/Session';
 
 type SessionRow = typeof sessions.$inferSelect;
+
+const isSessionStatus = (value: string): value is SessionStatus =>
+  Object.values(SessionStatus).includes(value as SessionStatus);
+
+const parseClipIds = (raw: string): string[] => {
+  try {
+    return z.array(z.string()).parse(JSON.parse(raw));
+  } catch {
+    return [];
+  }
+};
 
 const rowToDTO = (row: SessionRow): SessionDTO => ({
   id: row.id,
   name: row.name,
-  started_at: row.startedAt instanceof Date ? row.startedAt.toISOString() : String(row.startedAt),
-  ended_at: row.endedAt instanceof Date ? row.endedAt.toISOString() : (row.endedAt ?? null),
-  status: row.status,
-  clip_ids: JSON.parse(row.clipIds) as string[],
+  started_at: row.startedAt.toISOString(),
+  ended_at: row.endedAt ? row.endedAt.toISOString() : null,
+  status: isSessionStatus(row.status) ? row.status : SessionStatus.Active,
+  clip_ids: parseClipIds(row.clipIds),
   calibration_id: row.calibrationId ?? null,
   notes: row.notes ?? undefined,
   location: row.location ?? undefined,
-  created_at: row.createdAt instanceof Date ? row.createdAt.toISOString() : String(row.createdAt),
-  updated_at: row.updatedAt instanceof Date ? row.updatedAt.toISOString() : String(row.updatedAt),
+  created_at: row.createdAt.toISOString(),
+  updated_at: row.updatedAt.toISOString(),
 });
 
 const dtoToInsert = (dto: SessionDTO): typeof sessions.$inferInsert => ({
@@ -35,6 +48,7 @@ const dtoToInsert = (dto: SessionDTO): typeof sessions.$inferInsert => ({
 
 const partialDtoToSet = (updates: Partial<SessionDTO>): Partial<typeof sessions.$inferInsert> => {
   const set: Partial<typeof sessions.$inferInsert> = {};
+  set.updatedAt = new Date();
   if (updates.name !== undefined) set.name = updates.name;
   if (updates.started_at !== undefined) set.startedAt = new Date(updates.started_at);
   if (updates.ended_at !== undefined)
@@ -44,7 +58,6 @@ const partialDtoToSet = (updates: Partial<SessionDTO>): Partial<typeof sessions.
   if (updates.calibration_id !== undefined) set.calibrationId = updates.calibration_id ?? null;
   if (updates.notes !== undefined) set.notes = updates.notes ?? null;
   if (updates.location !== undefined) set.location = updates.location ?? null;
-  if (updates.updated_at !== undefined) set.updatedAt = new Date(updates.updated_at);
   return set;
 };
 
@@ -52,9 +65,9 @@ export class SessionLocalDataSource {
   constructor(private readonly db: DbClient) {}
 
   async create(session: SessionDTO): Promise<SessionDTO> {
-    const rows = await this.db.insert(sessions).values(dtoToInsert(session));
-    const inserted = Array.isArray(rows) && rows.length > 0 ? rows[0] : null;
-    return inserted ? rowToDTO(inserted as SessionRow) : session;
+    const rows = await this.db.insert(sessions).values(dtoToInsert(session)).returning();
+    if (!rows.length) return session;
+    return rowToDTO(rows[0]);
   }
 
   async getById(id: string): Promise<SessionDTO | null> {

@@ -1,5 +1,6 @@
 import { SessionLocalDataSource } from '@data/datasources/local/SessionLocalDataSource';
 import { SessionDTO } from '@data/models/SessionDTO';
+import { SessionStatus } from '@domain/entities/Session';
 
 // Mock the Drizzle db client at the JSI boundary — each test configures
 // its own fluent builder chain via db.insert/select/update/delete mocks.
@@ -18,7 +19,7 @@ const makeDTO = (overrides: Partial<SessionDTO> = {}): SessionDTO => ({
   name: 'Test Session',
   started_at: NOW_ISO,
   ended_at: null,
-  status: 'active',
+  status: SessionStatus.Active,
   clip_ids: ['clip-1'],
   calibration_id: null,
   notes: 'Test notes',
@@ -62,7 +63,9 @@ describe('SessionLocalDataSource', () => {
       const dbRow = makeDbRow();
 
       db.insert.mockReturnValue({
-        values: jest.fn().mockResolvedValue([dbRow]),
+        values: jest.fn().mockReturnValue({
+          returning: jest.fn().mockResolvedValue([dbRow]),
+        }),
       });
 
       const result = await dataSource.create(dto);
@@ -166,6 +169,26 @@ describe('SessionLocalDataSource', () => {
       const result = await dataSource.update('missing-id', { name: 'X' });
 
       expect(result).toBeNull();
+    });
+
+    it('sets updatedAt to a new timestamp on update', async () => {
+      const before = new Date('2025-01-01T00:00:00.000Z');
+      const updatedRow = makeDbRow({ name: 'New Name' });
+      updatedRow.updatedAt = new Date();
+
+      db.update.mockReturnValue({
+        set: jest.fn().mockReturnValue({
+          where: jest.fn().mockReturnValue({
+            returning: jest.fn().mockResolvedValue([updatedRow]),
+          }),
+        }),
+      });
+
+      const result = await dataSource.update('session-1', { name: 'New Name' });
+
+      expect(result).not.toBeNull();
+      const updatedAt = new Date(result!.updated_at);
+      expect(updatedAt.getTime()).toBeGreaterThanOrEqual(before.getTime());
     });
   });
 
