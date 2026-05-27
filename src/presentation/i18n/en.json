@@ -43,7 +43,6 @@
     "clips": "{{count}} clips"
   },
   "session": {
-    "defaultName": "Tennis Session",
     "startButton": "Start Session",
     "deleteConfirmTitle": "Delete Session",
     "deleteConfirmMessage": "This will permanently delete the session and all its clips.",

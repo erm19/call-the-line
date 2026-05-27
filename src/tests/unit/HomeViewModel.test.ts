@@ -73,11 +73,24 @@ describe('HomeViewModel', () => {
       const session = makeSession({ id: 'new-session' });
       mockStartSession.execute.mockResolvedValue(success(session));
 
-      await viewModel.startSession('My Session');
+      const result = await viewModel.startSession('My Session');
 
+      expect(result.isSuccess).toBe(true);
+      if (result.isSuccess) {
+        expect(result.value.id).toBe('new-session');
+      }
       expect(useSessionStore.getState().items).toHaveLength(1);
       expect(useSessionStore.getState().items[0].id).toBe('new-session');
       expect(useSessionStore.getState().activeItem).toEqual(session);
+    });
+
+    it('returns failure Result on error', async () => {
+      mockStartSession.execute.mockResolvedValue(failure(new StorageError('Write failed')));
+
+      const result = await viewModel.startSession('Session');
+
+      expect(result.isSuccess).toBe(false);
+      expect(useSessionStore.getState().error).toBe('Write failed');
     });
 
     it('passes the session name to the use case', async () => {

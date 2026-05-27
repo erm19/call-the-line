@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { View, Text, FlatList, Pressable, StyleSheet, ListRenderItem } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList, Routes } from '../../navigation/types';
@@ -6,11 +6,12 @@ import { colors } from '../../theme/colors';
 import { spacing, borderRadius } from '../../theme/spacing';
 import { typography } from '../../theme/typography';
 import { t } from '../../i18n';
-import { formatDate } from '@core/utils/date';
+import { formatSessionDateTime } from '@core/utils/date';
 import { diContainer, DI_TOKENS } from '@core/di/container';
+import { SESSION_CONSTANTS } from '@core/config/constants';
 import { StartSession } from '@domain/useCases/StartSession';
 import { GetSessions } from '@domain/useCases/GetSessions';
-import { Session } from '@domain/entities/Session';
+import type { Session } from '@domain/entities/Session';
 import { useSessionStore } from '@presentation/state/sessionStore';
 import { HomeViewModel } from './HomeViewModel';
 
@@ -20,26 +21,29 @@ interface Props {
   navigation: HomeScreenNavigationProp;
 }
 
-const DATE_FORMAT_PATTERN = 'PP p';
+const RECENT_SESSIONS_COUNT = 5;
 
 export const HomeScreen: React.FC<Props> = ({ navigation }) => {
   const items = useSessionStore(state => state.items);
   const isLoading = useSessionStore(state => state.isLoading);
 
-  const viewModel = useMemo(() => {
+  const viewModelRef = useRef<HomeViewModel | null>(null);
+  if (!viewModelRef.current) {
     const startSession = diContainer.resolve<StartSession>(DI_TOKENS.StartSession);
     const getSessions = diContainer.resolve<GetSessions>(DI_TOKENS.GetSessions);
-    return new HomeViewModel(startSession, getSessions);
-  }, []);
+    viewModelRef.current = new HomeViewModel(startSession, getSessions);
+  }
+  const viewModel = viewModelRef.current;
 
   useEffect(() => {
     void viewModel.loadSessions();
   }, [viewModel]);
 
-  const handleStartSession = (): void => {
-    void viewModel.startSession(t('session.defaultName')).then(() => {
-      navigation.navigate(Routes.Camera, {});
-    });
+  const handleStartSession = async (): Promise<void> => {
+    const result = await viewModel.startSession(SESSION_CONSTANTS.DEFAULT_NAME);
+    if (result.isSuccess) {
+      navigation.navigate(Routes.Camera, { sessionId: result.value.id });
+    }
   };
 
   const handleSessionPress = (sessionId: string): void => {
@@ -53,7 +57,7 @@ export const HomeScreen: React.FC<Props> = ({ navigation }) => {
   const renderItem: ListRenderItem<Session> = ({ item }) => (
     <Pressable style={styles.sessionCard} onPress={() => handleSessionPress(item.id)}>
       <Text style={styles.sessionName}>{item.name}</Text>
-      <Text style={styles.sessionDate}>{formatDate(item.startedAt, DATE_FORMAT_PATTERN)}</Text>
+      <Text style={styles.sessionDate}>{formatSessionDateTime(item.startedAt)}</Text>
     </Pressable>
   );
 
@@ -66,7 +70,9 @@ export const HomeScreen: React.FC<Props> = ({ navigation }) => {
 
       <Pressable
         style={[styles.primaryButton, isLoading && styles.buttonDisabled]}
-        onPress={handleStartSession}
+        onPress={() => {
+          void handleStartSession();
+        }}
         disabled={isLoading}>
         <Text style={styles.primaryButtonText}>{t('home.startSession')}</Text>
       </Pressable>
@@ -80,7 +86,7 @@ export const HomeScreen: React.FC<Props> = ({ navigation }) => {
             </Pressable>
           </View>
           <FlatList
-            data={items.slice(0, 5)}
+            data={items.slice(0, RECENT_SESSIONS_COUNT)}
             keyExtractor={item => item.id}
             renderItem={renderItem}
             scrollEnabled={false}
