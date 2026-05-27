@@ -1,46 +1,51 @@
-import { injectable, inject } from 'tsyringe';
-import { DI_TOKENS } from '@core/di/container';
 import { GetSessions } from '@domain/useCases/GetSessions';
 import { EndSession } from '@domain/useCases/EndSession';
 import { useSessionStore } from '@presentation/state/sessionStore';
 
 /**
  * ViewModel for SessionListScreen.
+ *
+ * Manually composed (instantiated via `new` in the screen) — not registered with tsyringe.
+ * Dependencies are passed explicitly through the constructor; do NOT add @injectable/@inject
+ * decorators here, as that would create a dual construction path.
+ *
  * Loads sessions on demand and ends sessions, syncing the session store.
  */
-@injectable()
 export class SessionListViewModel {
   constructor(
-    @inject(DI_TOKENS.GetSessions) private readonly getSessions: GetSessions,
-    @inject(DI_TOKENS.EndSession) private readonly endSession: EndSession,
+    private readonly getSessions: GetSessions,
+    private readonly endSession: EndSession,
   ) {}
 
   async loadSessions(): Promise<void> {
-    const store = useSessionStore.getState();
-    store.setIsLoading(true);
-    store.setError(null);
+    const { setIsLoading, setError, setItems } = useSessionStore.getState();
+    setIsLoading(true);
+    setError(null);
 
     const result = await this.getSessions.execute();
 
     if (result.isSuccess) {
-      useSessionStore.getState().setItems(result.value);
+      setItems(result.value);
     } else {
-      useSessionStore.getState().setError(result.error.message);
+      setError(result.error.message);
     }
 
-    useSessionStore.getState().setIsLoading(false);
+    setIsLoading(false);
   }
 
   async endSessionById(sessionId: string): Promise<void> {
+    const { setError, setItems } = useSessionStore.getState();
+    setError(null);
+
     const result = await this.endSession.execute(sessionId);
 
     if (result.isSuccess) {
       const updated = result.value;
       const current = useSessionStore.getState().items;
       const next = current.map(session => (session.id === updated.id ? updated : session));
-      useSessionStore.getState().setItems(next);
+      setItems(next);
     } else {
-      useSessionStore.getState().setError(result.error.message);
+      setError(result.error.message);
     }
   }
 }

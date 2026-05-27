@@ -9,6 +9,14 @@ export const formatDate = (date: Date | string, pattern: string = 'PPp'): string
 };
 
 /**
+ * Formats a session timestamp for display (date + time)
+ */
+export const formatSessionDateTime = (date: Date | string): string => {
+  const dateObj = typeof date === 'string' ? parseISO(date) : date;
+  return format(dateObj, 'PP p');
+};
+
+/**
  * Formats a date to a relative time string (e.g., "2 hours ago")
  */
 export const formatRelativeTime = (date: Date | string): string => {

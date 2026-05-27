@@ -72,7 +72,7 @@ describe('SessionListViewModel', () => {
   });
 
   describe('endSessionById', () => {
-    it('should remove the session from the store on success', async () => {
+    it('should update the ended session in the store on success', async () => {
       const sessionToEnd = makeSession({ id: 's-1' });
       const other = makeSession({ id: 's-2' });
       useSessionStore.getState().setItems([sessionToEnd, other]);
