@@ -14,6 +14,7 @@ export interface SessionStoreState {
   setActiveItem: (item: Session | null) => void;
   setIsLoading: (isLoading: boolean) => void;
   setError: (error: string | null) => void;
+  addItem: (item: Session) => void;
   reset: () => void;
 }
 
@@ -30,5 +31,6 @@ export const useSessionStore = create<SessionStoreState>(set => ({
   setActiveItem: activeItem => set({ activeItem }),
   setIsLoading: isLoading => set({ isLoading }),
   setError: error => set({ error }),
+  addItem: item => set(state => ({ items: [item, ...state.items] })),
   reset: () => set(initialState),
 }));
