@@ -74,7 +74,10 @@ export class CameraService implements ICameraService {
 
   async release(): Promise<Result<void, CameraError>> {
     if (this.status === CameraStatus.Recording) {
-      await this.stopRecording();
+      const stopResult = await this.stopRecording();
+      if (stopResult.isFailure) {
+        return failure(stopResult.error);
+      }
     }
     this.status = CameraStatus.Idle;
     this.config = null;

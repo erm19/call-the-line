@@ -1,6 +1,8 @@
 import { CameraService } from '@platform/camera/CameraService';
 import { CameraStatus } from '@platform/camera/CameraConfig';
 import type { CameraConfig } from '@platform/camera/CameraConfig';
+import { CameraError } from '@core/errors/AppError';
+import { failure } from '@core/utils/result';
 
 const makeConfig = (overrides: Partial<CameraConfig> = {}): CameraConfig => ({
   device: 'back',
@@ -62,12 +64,21 @@ describe('CameraService', () => {
       }
     });
 
-    it('should return false for an unknown device type', async () => {
+    it('should return true for a known front device', async () => {
       const result = await service.isDeviceAvailable('front');
 
       expect(result.isSuccess).toBe(true);
       if (result.isSuccess) {
-        expect(typeof result.value).toBe('boolean');
+        expect(result.value).toBe(true);
+      }
+    });
+
+    it('should return false for an unknown device type', async () => {
+      const result = await service.isDeviceAvailable('unknown-device' as never);
+
+      expect(result.isSuccess).toBe(true);
+      if (result.isSuccess) {
+        expect(result.value).toBe(false);
       }
     });
   });
@@ -175,6 +186,22 @@ describe('CameraService', () => {
 
       expect(result.isSuccess).toBe(true);
       expect(service.getStatus()).toBe(CameraStatus.Idle);
+    });
+
+    it('should propagate stopRecording failure during release', async () => {
+      await service.initialize(makeConfig());
+      await service.startRecording();
+
+      jest.spyOn(service, 'stopRecording').mockResolvedValueOnce(
+        failure(new CameraError('Stop failed')),
+      );
+
+      const result = await service.release();
+
+      expect(result.isFailure).toBe(true);
+      if (result.isFailure) {
+        expect(result.error.message).toBe('Stop failed');
+      }
     });
   });
 });

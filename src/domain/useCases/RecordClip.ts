@@ -1,4 +1,4 @@
-import { Result } from '@core/utils/result';
+import { Result, failure } from '@core/utils/result';
 import { AppError } from '@core/errors/AppError';
 import { Clip } from '../entities/Clip';
 import { IClipRepository } from '../repositories/ClipRepository';
@@ -6,7 +6,6 @@ import { ISessionRepository } from '../repositories/SessionRepository';
 import { getCurrentISOString } from '@core/utils/date';
 import { IAnalyticsService } from '@core/analytics/AnalyticsService';
 import { ANALYTICS_CONSTANTS } from '@core/config/constants';
-import { failure } from '@core/utils/result';
 
 /**
  * Input for RecordClip use case
@@ -56,11 +55,14 @@ export class RecordClip {
     const result = await this.clipRepository.create(clipData);
 
     if (result.isSuccess) {
-      // Update session with new clip ID
       const session = sessionResult.value;
-      await this.sessionRepository.update(input.sessionId, {
+      const updateResult = await this.sessionRepository.update(input.sessionId, {
         clipIds: [...session.clipIds, result.value.id],
       });
+
+      if (updateResult.isFailure) {
+        return failure(updateResult.error);
+      }
 
       this.analyticsService.trackEvent({
         name: ANALYTICS_CONSTANTS.EVENTS.CLIP_RECORDED,
