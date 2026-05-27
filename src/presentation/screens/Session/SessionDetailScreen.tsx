@@ -40,4 +40,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default SessionDetailScreen;
+export { SessionDetailScreen };
