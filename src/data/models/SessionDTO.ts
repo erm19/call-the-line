@@ -1,3 +1,5 @@
+import { SessionStatus } from '@domain/entities/Session';
+
 /**
  * Session Data Transfer Object
  * Represents session data as stored/transmitted
@@ -7,7 +9,7 @@ export interface SessionDTO {
   name: string;
   started_at: string;
   ended_at: string | null;
-  status: string;
+  status: SessionStatus;
   clip_ids: string[];
   calibration_id: string | null;
   notes?: string;

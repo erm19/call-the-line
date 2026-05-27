@@ -4,11 +4,10 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { RootStackParamList, Routes } from './types';
 import { t } from '../i18n';
 
-// Screen imports - will be implemented
-import HomeScreen from '../screens/Home/HomeScreen';
+import { HomeScreen } from '../screens/Home/HomeScreen';
 import CameraScreen from '../screens/Camera/CameraScreen';
-import SessionListScreen from '../screens/Session/SessionListScreen';
-import SessionDetailScreen from '../screens/Session/SessionDetailScreen';
+import { SessionListScreen } from '../screens/Session/SessionListScreen';
+import { SessionDetailScreen } from '../screens/Session/SessionDetailScreen';
 import ReviewScreen from '../screens/Review/ReviewScreen';
 import { PermissionDeniedScreen } from '../screens/PermissionDenied/PermissionDeniedScreen';
 

@@ -96,18 +96,17 @@ export const DI_TOKENS = {
   StartSession: Symbol('StartSession'),
   EndSession: Symbol('EndSession'),
   GetSessions: Symbol('GetSessions'),
-
+  /**
+   * Export singleton instance
+   *
+   * Concrete implementations are registered via bootstrap functions
+   * called from App.tsx — never import implementations here so that
+   * core remains dependency-free and tests avoid circular references.
+   *
+   * @see src/domain/di/registerUseCases.ts
+   */
   // Database
   DbClient: Symbol('DbClient'),
 } as const;
 
-/**
- * Export singleton instance
- *
- * Concrete implementations are registered via bootstrap functions
- * called from App.tsx — never import implementations here so that
- * core remains dependency-free and tests avoid circular references.
- *
- * @see src/domain/di/registerUseCases.ts
- */
 export const diContainer = DIContainer.getInstance();
