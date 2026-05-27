@@ -1,52 +1,17 @@
-import { Result } from '@core/utils/result';
+import { Result, success, failure } from '@core/utils/result';
 import { CameraError } from '@core/errors/AppError';
 import { CameraConfig, CameraStatus, RecordingResult, CameraDevice } from './CameraConfig';
 
-/**
- * Camera Service Interface
- * Provides standard camera operations for recording
- */
 export interface ICameraService {
-  /**
-   * Initializes camera with configuration
-   */
   initialize(config: CameraConfig): Promise<Result<void, CameraError>>;
-
-  /**
-   * Gets available camera devices
-   */
   getAvailableDevices(): Promise<Result<CameraDevice[], CameraError>>;
-
-  /**
-   * Checks if a specific camera device is available
-   */
   isDeviceAvailable(device: CameraDevice): Promise<Result<boolean, CameraError>>;
-
-  /**
-   * Starts video recording
-   */
   startRecording(): Promise<Result<void, CameraError>>;
-
-  /**
-   * Stops video recording and returns result
-   */
   stopRecording(): Promise<Result<RecordingResult, CameraError>>;
-
-  /**
-   * Gets current camera status
-   */
   getStatus(): CameraStatus;
-
-  /**
-   * Releases camera resources
-   */
   release(): Promise<Result<void, CameraError>>;
 }
 
-/**
- * Camera Service Implementation Stub
- * TODO: Implement with react-native-vision-camera
- */
 export class CameraService implements ICameraService {
   private status: CameraStatus = CameraStatus.Idle;
   private config: CameraConfig | null = null;
@@ -54,62 +19,53 @@ export class CameraService implements ICameraService {
   async initialize(config: CameraConfig): Promise<Result<void, CameraError>> {
     this.config = config;
     this.status = CameraStatus.Initializing;
-
-    // TODO: Initialize actual camera
-    // const device = await Camera.getDevice(config.device);
-    // Configure camera with resolution, fps, etc.
-
+    // TODO: Initialize actual camera with react-native-vision-camera
     this.status = CameraStatus.Ready;
-    return { isSuccess: true, isFailure: false, value: undefined } as Result<void, CameraError>;
+    return success(undefined);
   }
 
   async getAvailableDevices(): Promise<Result<CameraDevice[], CameraError>> {
-    // TODO: Query actual available devices
+    // TODO: Query actual devices via react-native-vision-camera
     const devices: CameraDevice[] = [
       'back',
       'front',
       'wide-angle-camera',
       'ultra-wide-angle-camera',
     ];
-    return { isSuccess: true, isFailure: false, value: devices } as Result<
-      CameraDevice[],
-      CameraError
-    >;
+    return success(devices);
   }
 
   async isDeviceAvailable(device: CameraDevice): Promise<Result<boolean, CameraError>> {
-    // TODO: Check actual device availability
-    const availableResult = await this.getAvailableDevices();
-    if (availableResult.isFailure) {
-      return availableResult as Result<boolean, CameraError>;
+    const devicesResult = await this.getAvailableDevices();
+    if (devicesResult.isFailure) {
+      return failure(devicesResult.error);
     }
-    const isAvailable = availableResult.value.includes(device);
-    return { isSuccess: true, isFailure: false, value: isAvailable } as Result<
-      boolean,
-      CameraError
-    >;
+    return success(devicesResult.value.includes(device));
   }
 
   async startRecording(): Promise<Result<void, CameraError>> {
+    if (this.status !== CameraStatus.Ready) {
+      return failure(new CameraError('Camera must be initialized and ready before recording'));
+    }
     this.status = CameraStatus.Recording;
-    // TODO: Start actual recording
-    return { isSuccess: true, isFailure: false, value: undefined } as Result<void, CameraError>;
+    // TODO: Start actual recording via react-native-vision-camera
+    return success(undefined);
   }
 
   async stopRecording(): Promise<Result<RecordingResult, CameraError>> {
+    if (this.status !== CameraStatus.Recording) {
+      return failure(new CameraError('Camera is not recording'));
+    }
     this.status = CameraStatus.Ready;
-    // TODO: Stop actual recording and return result
-    const result: RecordingResult = {
+    // TODO: Stop actual recording and return real file metadata
+    const recordingResult: RecordingResult = {
       videoPath: '/path/to/video.mp4',
-      duration: 10,
-      fileSize: 1024 * 1024,
-      resolution: this.config?.resolution || { width: 1280, height: 720 },
-      fps: this.config?.fps || 60,
+      duration: 0,
+      fileSize: 0,
+      resolution: this.config?.resolution ?? { width: 1280, height: 720 },
+      fps: this.config?.fps ?? 60,
     };
-    return { isSuccess: true, isFailure: false, value: result } as Result<
-      RecordingResult,
-      CameraError
-    >;
+    return success(recordingResult);
   }
 
   getStatus(): CameraStatus {
@@ -117,9 +73,15 @@ export class CameraService implements ICameraService {
   }
 
   async release(): Promise<Result<void, CameraError>> {
+    if (this.status === CameraStatus.Recording) {
+      const stopResult = await this.stopRecording();
+      if (stopResult.isFailure) {
+        return failure(stopResult.error);
+      }
+    }
     this.status = CameraStatus.Idle;
     this.config = null;
     // TODO: Release actual camera resources
-    return { isSuccess: true, isFailure: false, value: undefined } as Result<void, CameraError>;
+    return success(undefined);
   }
 }
