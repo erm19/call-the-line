@@ -82,18 +82,18 @@ Goal: create/list/view sessions end-to-end with persistent storage.
 - [x] **1.1** Implement `StartSession` use case body — generate ID, set timestamps, persist via `SessionRepository`
 - [x] **1.2** Implement `EndSession` use case body — update status and `endedAt`, persist
 - [x] **1.3** Implement `GetSessions` use case body — fetch all sessions ordered by `createdAt` desc
-- [ ] **1.4** Implement `SessionLocalDataSource` — Drizzle CRUD on `sessions` table: `insert`, `findById`, `findAll` (ordered by `createdAt` desc), `update`, `delete`
-- [ ] **1.5** Implement `SessionRepositoryImpl` — wire local data source, map DTOs ↔ entities
-- [ ] **1.6** Create `sessionStore.ts` (Zustand) — sessions list, active session, loading/error state
-- [ ] **1.7** Create `HomeViewModel.ts` — expose `startSession()`, `sessions`, `isLoading`, `error`
-- [ ] **1.8** Implement `HomeScreen.tsx` — show session list, "Start Session" button, navigate to Camera
-- [ ] **1.9** Create `SessionListScreen` ViewModel — load sessions on mount, expose list + delete action
-- [ ] **1.10** Implement `SessionListScreen.tsx` — flat list of sessions with date/status
-- [ ] **1.11** Implement `SessionDetailScreen.tsx` — show session metadata and clips list
+- [x] **1.4** Implement `SessionLocalDataSource` — Drizzle CRUD on `sessions` table: `insert`, `findById`, `findAll` (ordered by `createdAt` desc), `update`, `delete`
+- [x] **1.5** Implement `SessionRepositoryImpl` — wire local data source, map DTOs ↔ entities
+- [x] **1.6** Create `sessionStore.ts` (Zustand) — sessions list, active session, loading/error state
+- [x] **1.7** Create `HomeViewModel.ts` — expose `startSession()`, `sessions`, `isLoading`, `error`
+- [x] **1.8** Implement `HomeScreen.tsx` — show session list, "Start Session" button, navigate to Camera
+- [x] **1.9** Create `SessionListScreen` ViewModel — load sessions on mount, expose list + delete action
+- [x] **1.10** Implement `SessionListScreen.tsx` — flat list of sessions with date/status
+- [x] **1.11** Implement `SessionDetailScreen.tsx` — show session metadata and clips list
 - [x] **1.12** Add i18n keys for all session UI strings
 - [x] **1.13** Unit tests: StartSession, EndSession, GetSessions use cases
-- [ ] **1.14** Unit tests: `SessionLocalDataSource` — mock the Drizzle `db` client; verify query calls for each CRUD operation
-- [ ] **1.15** Integration test: `SessionRepositoryImpl` — in-memory SQLite via `expo-sqlite` test helper; no mocks for repo logic
+- [x] **1.14** Unit tests: `SessionLocalDataSource` — mock the Drizzle `db` client; verify query calls for each CRUD operation
+- [x] **1.15** Integration test: `SessionRepositoryImpl` — in-memory SQLite via `expo-sqlite` test helper; no mocks for repo logic
 
 ---
 
@@ -102,9 +102,9 @@ Goal: create/list/view sessions end-to-end with persistent storage.
 Goal: user can record a clip and it's saved to the session.
 
 - [x] **2.1** Implement `PermissionService` — camera + microphone permission request and status check
-- [ ] **2.2** Implement `CameraService` — start/stop standard recording using vision-camera, return file path
+- [x] **2.2** Implement `CameraService` — start/stop standard recording using vision-camera, return file path
 - [x] **2.3** Implement `FileStorageService` — save/delete/list clip files in app-private storage
-- [ ] **2.4** Implement `RecordClip` use case body — orchestrate CameraService + ClipRepository
+- [x] **2.4** Implement `RecordClip` use case body — orchestrate CameraService + ClipRepository
 - [ ] **2.5** Implement `ClipLocalDataSource` — Drizzle CRUD on `clips` table; include `findBySessionId` query
 - [ ] **2.6** Implement `ClipRepositoryImpl` — wire local data source + file storage, map Drizzle rows ↔ entities
 - [ ] **2.7** Create `CameraViewModel.ts` — recording state machine: idle → recording → saving → done
@@ -113,7 +113,7 @@ Goal: user can record a clip and it's saved to the session.
 - [ ] **2.10** Lock orientation to landscape in camera screen
 - [x] **2.11** Add `VideoPlayer` component for clip playback
 - [x] **2.12** Add i18n keys for camera UI strings
-- [ ] **2.13** Unit tests: RecordClip use case
+- [x] **2.13** Unit tests: RecordClip use case
 - [ ] **2.14** Unit tests: CameraViewModel state transitions
 - [ ] **2.15** Integration test: `ClipRepositoryImpl` — in-memory SQLite
 

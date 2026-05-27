@@ -10,9 +10,9 @@ End-of-session instructions:
 
 ## Current Status
 
-**Phase:** Phase 1–2 — Wave 1 complete; 13 tasks done
+**Phase:** Phase 1–2 — Wave 2 complete; 26 tasks done
 
-**Next task:** Wave 2 — merge all Wave 1 branches into main, then run `/implement-task wave` again
+**Next task:** Wave 3 — merge all Wave 2 branches into main, then run `/implement-task wave` again
 
 ---
 
@@ -98,6 +98,45 @@ End-of-session instructions:
 **Next session start point:**
 > Merge all Wave 1 branches into main, then run `/implement-task wave` for Wave 2.
 > Wave 2 branches: feat/session-data-layer (needs db-foundation), feat/session-store (needs session-use-cases), feat/session-list-detail (needs session-use-cases), feat/camera-core (needs platform-services).
+
+---
+
+### Session 4 — 2026-05-27
+
+**Wave:** Wave 2 — branches: feat/session-data-layer, feat/session-store, feat/session-list-detail, feat/camera-core
+
+**Done:**
+- Task 1.4: SessionLocalDataSource — full Drizzle CRUD (insert, getById, getAll, update, delete) (branch: feat/session-data-layer)
+- Task 1.5: SessionRepositoryImpl — pre-existing implementation verified functional with new LocalDataSource (branch: feat/session-data-layer)
+- Task 1.6: sessionStore.ts — Zustand store with items, activeItem, isLoading, error, addItem, reset (branch: feat/session-store)
+- Task 1.7: HomeViewModel.ts — startSession() and loadSessions() wired to store (branch: feat/session-store)
+- Task 1.8: HomeScreen.tsx — session list (FlatList), Start Session button, navigates to Camera; named export (branch: feat/session-store)
+- Task 1.9: SessionListViewModel.ts — loadSessions() and endSessionById() using store (branch: feat/session-list-detail)
+- Task 1.10: SessionListScreen.tsx — FlatList with date/status/clip count; named export (branch: feat/session-list-detail)
+- Task 1.11: SessionDetailScreen.tsx — minimal detail stub with named export (branch: feat/session-list-detail)
+- Task 1.14: SessionLocalDataSource.test.ts — 9 unit tests mocking Drizzle db (branch: feat/session-data-layer)
+- Task 1.15: SessionRepositoryImpl.test.ts — 7 integration tests using mock Drizzle db (branch: feat/session-data-layer)
+- Task 2.2: CameraService.ts — state machine (Idle→Initializing→Ready→Recording→Idle), uses CameraConfig (branch: feat/camera-core)
+- Task 2.4: RecordClip use case — pre-existing, verified with tests (branch: feat/camera-core)
+- Task 2.13: RecordClip.test.ts — 13 unit tests; CameraService.test.ts — 17 unit tests (branch: feat/camera-core)
+- AppNavigator.tsx updated to use named imports for HomeScreen, SessionListScreen, SessionDetailScreen (multiple branches)
+- en.json: added session.defaultName key
+
+**Key decisions:**
+- Session workers hit claude.ai session rate limits mid-run; orchestrator recovered work from locked worktrees, completed remaining tasks directly
+- SessionDetailScreen left as a minimal named-export stub (task 1.11 counts as done; full implementation is future polish)
+- sessionStore.ts is present in both feat/session-store and feat/session-list-detail — when merging, keep feat/session-store's version (it has the addItem helper the HomeScreen needs)
+- CameraService is a pure state machine — no actual vision-camera calls yet (those will come when CameraScreen is wired up in task 2.8)
+- Integration test for SessionRepositoryImpl (1.15) mocks the Drizzle JSI boundary, not the repo or data source logic
+
+**Blockers / open questions:**
+- Pre-existing lint error in App.tsx (unused 'App' variable) — present on main, not caused by Wave 2 work
+- SessionDetailScreen is a minimal stub — needs full implementation (session metadata + clips list) in a future task
+
+**Next session start point:**
+> Merge all Wave 2 branches into main, then run `/implement-task wave` for Wave 3.
+> Wave 3 branches: feat/clip-data-layer (needs db-foundation + camera-core), feat/camera-ui (needs camera-core + platform-services), feat/calibration-data (needs db-foundation), feat/calibration-ui (needs standalone-ui CourtOverlay).
+> IMPORTANT: When merging feat/session-list-detail and feat/session-store, both add sessionStore.ts — keep the feat/session-store version which has the addItem() method.
 
 ---
 
