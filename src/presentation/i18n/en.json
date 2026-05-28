@@ -65,7 +65,9 @@
     },
     "confirm": "Confirm Calibration",
     "reset": "Reset",
-    "tapPrompt": "Tap corner {{count}} of 4"
+    "tapPrompt": "Tap corner {{count}} of 4",
+    "undoPoint": "Undo",
+    "save": "Save Calibration"
   },
   "review": {
     "title": "Review",

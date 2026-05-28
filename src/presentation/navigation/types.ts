@@ -11,6 +11,7 @@ export type RootStackParamList = {
   Auth: undefined;
   NRTStatus: undefined;
   PermissionDenied: undefined;
+  Calibration: { sessionId: string };
 };
 
 export enum Routes {
@@ -22,4 +23,5 @@ export enum Routes {
   Auth = 'Auth',
   NRTStatus = 'NRTStatus',
   PermissionDenied = 'PermissionDenied',
+  Calibration = 'Calibration',
 }
