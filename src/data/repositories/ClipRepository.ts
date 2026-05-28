@@ -2,6 +2,7 @@ import { Result, success, failure } from '@core/utils/result';
 import { NotFoundError, StorageError } from '@core/errors/AppError';
 import { Clip } from '@domain/entities/Clip';
 import { IClipRepository } from '@domain/repositories/ClipRepository';
+import type { IClipStorageService } from '@domain/services/IClipStorageService';
 import { ClipLocalDataSource } from '../datasources/local/ClipLocalDataSource';
 import { clipFromDTO, clipToDTO } from '../mappers/clipMapper';
 import { getCurrentISOString } from '@core/utils/date';
@@ -10,7 +11,10 @@ import { getCurrentISOString } from '@core/utils/date';
  * Clip Repository Implementation
  */
 export class ClipRepository implements IClipRepository {
-  constructor(private readonly localDataSource: ClipLocalDataSource) {}
+  constructor(
+    private readonly localDataSource: ClipLocalDataSource,
+    private readonly clipStorageService: IClipStorageService,
+  ) {}
 
   async create(
     clip: Omit<Clip, 'id' | 'createdAt' | 'updatedAt'>,
@@ -68,6 +72,14 @@ export class ClipRepository implements IClipRepository {
 
   async delete(id: string): Promise<Result<void, StorageError>> {
     try {
+      const dto = await this.localDataSource.getById(id);
+      if (!dto) {
+        return failure(new NotFoundError('Clip not found', 'clip'));
+      }
+
+      // Best-effort file deletion — swallow errors since the DB delete is authoritative
+      await this.clipStorageService.deleteClip(dto.video_path).catch(() => undefined);
+
       const deleted = await this.localDataSource.delete(id);
       if (!deleted) {
         return failure(new NotFoundError('Clip not found', 'clip'));
@@ -80,6 +92,13 @@ export class ClipRepository implements IClipRepository {
 
   async deleteBySessionId(sessionId: string): Promise<Result<void, StorageError>> {
     try {
+      const dtos = await this.localDataSource.getBySessionId(sessionId);
+
+      // Best-effort file deletion for each clip
+      await Promise.all(
+        dtos.map(dto => this.clipStorageService.deleteClip(dto.video_path).catch(() => undefined)),
+      );
+
       await this.localDataSource.deleteBySessionId(sessionId);
       return success(undefined);
     } catch (error) {
