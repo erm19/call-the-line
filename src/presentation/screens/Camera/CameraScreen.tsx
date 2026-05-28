@@ -28,6 +28,16 @@ type CameraScreenProps = {
 
 const RECORD_BUTTON_SIZE = 72;
 
+const DEFAULT_CAMERA_CONFIG = {
+  device: 'back' as const,
+  resolution: { width: 1920, height: 1080 },
+  fps: 60,
+  quality: 'high' as const,
+  codec: 'h264' as const,
+  enableAudio: false,
+  maxDuration: 0,
+};
+
 const RecordingStateLabel: Record<RecordingState, string> = {
   [RecordingState.Idle]: 'Ready',
   [RecordingState.Recording]: 'Recording…',
@@ -64,23 +74,12 @@ export const CameraScreen: React.FC<CameraScreenProps> = ({ navigation, route })
       }
       if (checkResult.value !== PermissionStatus.Granted) {
         const requestResult = await permissionService.requestPermission(Permission.Camera);
-        if (
-          requestResult.isFailure ||
-          requestResult.value !== PermissionStatus.Granted
-        ) {
+        if (requestResult.isFailure || requestResult.value !== PermissionStatus.Granted) {
           navigation.navigate(Routes.PermissionDenied);
           return;
         }
       }
-      await viewModel.initialize({
-        device: 'back',
-        resolution: { width: 1920, height: 1080 },
-        fps: 60,
-        quality: 'high',
-        codec: 'h264',
-        enableAudio: false,
-        maxDuration: 0,
-      });
+      await viewModel.initialize(DEFAULT_CAMERA_CONFIG);
     };
 
     void setup();
@@ -92,15 +91,24 @@ export const CameraScreen: React.FC<CameraScreenProps> = ({ navigation, route })
 
   const handleRecordPress = async (): Promise<void> => {
     if (recordingState === RecordingState.Recording) {
-      await viewModel.stopRecording(sessionId ?? '');
+      if (!sessionId) {
+        useCameraStore.getState().setError('No active session — go back and start a session first');
+        useCameraStore.getState().setRecordingState(RecordingState.Error);
+        return;
+      }
+      await viewModel.stopRecording(sessionId);
     } else if (recordingState === RecordingState.Idle) {
       await viewModel.startRecording();
+    } else if (recordingState === RecordingState.Error) {
+      await viewModel.initialize(DEFAULT_CAMERA_CONFIG);
     }
   };
 
   const isRecording = recordingState === RecordingState.Recording;
   const canRecord =
-    recordingState === RecordingState.Idle || recordingState === RecordingState.Recording;
+    recordingState === RecordingState.Idle ||
+    recordingState === RecordingState.Recording ||
+    recordingState === RecordingState.Error;
 
   return (
     <View style={styles.container}>

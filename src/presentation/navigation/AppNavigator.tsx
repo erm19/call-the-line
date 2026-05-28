@@ -6,7 +6,6 @@ import { t } from '../i18n';
 
 import { HomeScreen } from '../screens/Home/HomeScreen';
 import { CameraScreen } from '../screens/Camera/CameraScreen';
-import { CalibrationScreen } from '../screens/Camera/CalibrationScreen';
 import { SessionListScreen } from '../screens/Session/SessionListScreen';
 import { SessionDetailScreen } from '../screens/Session/SessionDetailScreen';
 import ReviewScreen from '../screens/Review/ReviewScreen';
@@ -56,11 +55,6 @@ export const AppNavigator: React.FC = () => {
           name={Routes.PermissionDenied}
           component={PermissionDeniedScreen}
           options={{ title: t('navigation.permissionDenied') }}
-        />
-        <Stack.Screen
-          name={Routes.Calibration}
-          component={CalibrationScreen}
-          options={{ title: t('calibration.title'), headerShown: false }}
         />
       </Stack.Navigator>
     </NavigationContainer>

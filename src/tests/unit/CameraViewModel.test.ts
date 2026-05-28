@@ -4,7 +4,7 @@ import { useCameraStore } from '@presentation/state/cameraStore';
 import { ICameraService } from '@platform/camera/CameraService';
 import { RecordClip } from '@domain/useCases/RecordClip';
 import { Clip } from '@domain/entities/Clip';
-import { CameraConfig, CameraStatus } from '@platform/camera/CameraConfig';
+import { CameraConfig } from '@platform/camera/CameraConfig';
 import { success, failure } from '@core/utils/result';
 import { CameraError, StorageError } from '@core/errors/AppError';
 
@@ -68,9 +68,7 @@ describe('CameraViewModel', () => {
     });
 
     it('sets Error state when camera initialization fails', async () => {
-      mockCameraService.initialize.mockResolvedValue(
-        failure(new CameraError('Init failed')),
-      );
+      mockCameraService.initialize.mockResolvedValue(failure(new CameraError('Init failed')));
 
       await viewModel.initialize(makeConfig());
 
@@ -89,9 +87,7 @@ describe('CameraViewModel', () => {
     });
 
     it('sets Error state when startRecording fails', async () => {
-      mockCameraService.startRecording.mockResolvedValue(
-        failure(new CameraError('Start failed')),
-      );
+      mockCameraService.startRecording.mockResolvedValue(failure(new CameraError('Start failed')));
 
       await viewModel.startRecording();
 
@@ -138,9 +134,7 @@ describe('CameraViewModel', () => {
     });
 
     it('sets Error state when stopRecording fails', async () => {
-      mockCameraService.stopRecording.mockResolvedValue(
-        failure(new CameraError('Stop failed')),
-      );
+      mockCameraService.stopRecording.mockResolvedValue(failure(new CameraError('Stop failed')));
 
       await viewModel.stopRecording('session-1');
 

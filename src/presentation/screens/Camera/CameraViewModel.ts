@@ -1,5 +1,5 @@
-import { Result } from '@core/utils/result';
-import { AppError, CameraError } from '@core/errors/AppError';
+import { Result, failure } from '@core/utils/result';
+import { AppError } from '@core/errors/AppError';
 import { Clip } from '@domain/entities/Clip';
 import { RecordClip } from '@domain/useCases/RecordClip';
 import { ICameraService } from '@platform/camera/CameraService';
@@ -21,6 +21,7 @@ export class CameraViewModel {
 
   async initialize(config: CameraConfig): Promise<void> {
     const { setRecordingState, setError } = useCameraStore.getState();
+    setError(null);
     const result = await this.cameraService.initialize(config);
     if (result.isFailure) {
       setError(result.error.message);
@@ -32,6 +33,7 @@ export class CameraViewModel {
 
   async startRecording(): Promise<void> {
     const { setRecordingState, setError } = useCameraStore.getState();
+    setError(null);
     const result = await this.cameraService.startRecording();
     if (result.isFailure) {
       setError(result.error.message);
@@ -49,7 +51,7 @@ export class CameraViewModel {
     if (stopResult.isFailure) {
       setError(stopResult.error.message);
       setRecordingState(RecordingState.Error);
-      return stopResult as unknown as Result<Clip, AppError>;
+      return failure(stopResult.error);
     }
 
     const { videoPath, duration, fileSize, resolution, fps, thumbnailPath } = stopResult.value;
