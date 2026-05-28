@@ -1,6 +1,7 @@
 ---
 name: implement-task
 description: implement the next task from plan.md — create branch, RGR cycle, quality gate, commit, update progress. Supports parallel worktree waves. Use when asked to "implement the next task", "work on task X.Y", "continue from where we left off", "start a new task", or "run the next wave".
+allowed-tools: Read, Grep, Glob, Bash, Edit, Write, Agent, Bash(git commit*), Bash(git add*), Bash(git checkout*), Bash(git log*), Bash(git diff*), Bash(git status*), Bash(git branch*), Bash(git push*)
 ---
 
 # implement-task
@@ -57,6 +58,7 @@ For each worktree row from W1, launch one sub-agent **simultaneously** using the
 > 3. **RGR** — for each task: write the failing test first, then implement minimally, then refactor. Follow the architecture rules and Gotchas at the bottom of this skill.
 > 4. **Quality gate** — `npm test && npm run typecheck && npm run lint`. Fix all failures before continuing.
 > 5. **Commit** — `git add -p` (code and tests only), then `git commit -m "<type>: <description>"`
+> 6. **Review** — After committing, invoke the `review` skill via the Skill tool (`Skill("review")`). Fix all `[Blocker]` findings. Re-run the quality gate and commit any fixes as `fix: address review findings`.
 >
 > **CRITICAL:** Do **NOT** modify `plan.md` or `progress.md`. The orchestrator handles those.
 >
@@ -78,6 +80,26 @@ For each worktree row from W1, launch one sub-agent **simultaneously** using the
 Wait for all sub-agents to finish. Collect their structured blocks.
 
 If a sub-agent's final message contains no structured block, treat all its tasks as blocked with reason "agent did not complete".
+
+### W3.5 — Review & Fix (orchestrator)
+
+For each branch in `TASKS_COMPLETED`, checkout the branch and run a code review:
+
+```bash
+git checkout <branch>
+```
+
+Then invoke the `review` skill via the Skill tool (`Skill("review")`). This runs in LOCAL mode — it reviews the branch diff against main.
+
+Fix **all findings** — `[Blocker]`, `[Nice to have]`, `[Suggestion]`, and `[Question]`:
+1. Address each finding in the relevant file(s)
+2. For `[Question]` findings: make the best judgment call and leave a brief note in the commit message explaining the decision
+3. Re-run the quality gate: `npm test && npm run typecheck && npm run lint`
+4. Commit all fixes: `git add -p && git commit -m "fix: address review findings"`
+
+After reviewing all branches, return to main: `git checkout main`
+
+---
 
 ### W4 — Update tracking files (orchestrator only)
 
@@ -366,6 +388,18 @@ Do **not** push automatically. Offer:
 Branch: task/<ID>-<slug>
 Push when ready: git push -u origin task/<ID>-<slug>
 ```
+
+---
+
+### Phase 6.5 — Review & Fix
+
+Invoke the `review` skill via the Skill tool (`Skill("review")`). This reviews the current branch diff against main in LOCAL mode.
+
+Fix **all findings** — `[Blocker]`, `[Nice to have]`, `[Suggestion]`, and `[Question]`:
+1. Address each finding in the relevant file(s)
+2. For `[Question]` findings: make the best judgment call and leave a brief note in the commit message explaining the decision
+3. Re-run the quality gate: `npm test && npm run typecheck && npm run lint`
+4. Commit all fixes: `git add -p && git commit -m "fix: address review findings"`
 
 ---
 
