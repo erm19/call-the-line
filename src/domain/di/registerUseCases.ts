@@ -2,6 +2,7 @@ import { diContainer, DI_TOKENS } from '@core/di/container';
 import { StartSession } from '../useCases/StartSession';
 import { EndSession } from '../useCases/EndSession';
 import { GetSessions } from '../useCases/GetSessions';
+import { SaveCalibration } from '../useCases/SaveCalibration';
 
 /**
  * Registers all domain use cases with the DI container.
@@ -17,4 +18,5 @@ export const registerUseCases = (): void => {
   diContainer.registerSingleton(DI_TOKENS.StartSession, StartSession as never);
   diContainer.registerSingleton(DI_TOKENS.EndSession, EndSession as never);
   diContainer.registerSingleton(DI_TOKENS.GetSessions, GetSessions as never);
+  diContainer.registerSingleton(DI_TOKENS.SaveCalibration, SaveCalibration as never);
 };
