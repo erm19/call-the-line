@@ -42,3 +42,25 @@ export const calibrationToDTO = (calibration: CourtCalibration): CalibrationDTO 
     updated_at: calibration.updatedAt,
   };
 };
+
+/**
+ * Maps a partial Calibration Domain Entity to a partial DTO for updates.
+ */
+export const calibrationPartialToDTO = (
+  partial: Partial<CourtCalibration>,
+): Partial<CalibrationDTO> => {
+  const dto: Partial<CalibrationDTO> = {};
+  if (partial.id !== undefined) dto.id = partial.id;
+  if (partial.sessionId !== undefined) dto.session_id = partial.sessionId;
+  if (partial.cornerPoints !== undefined) dto.corner_points = Array.from(partial.cornerPoints);
+  if (partial.lines !== undefined)
+    dto.lines = partial.lines.map(l => ({ type: l.type, points: l.points }));
+  if (partial.transformationMatrix !== undefined)
+    dto.transformation_matrix = partial.transformationMatrix;
+  if (partial.cameraParams !== undefined) dto.camera_params = partial.cameraParams;
+  if (partial.confidence !== undefined) dto.confidence = partial.confidence;
+  if (partial.isValid !== undefined) dto.is_valid = partial.isValid;
+  if (partial.createdAt !== undefined) dto.created_at = partial.createdAt;
+  if (partial.updatedAt !== undefined) dto.updated_at = partial.updatedAt;
+  return dto;
+};

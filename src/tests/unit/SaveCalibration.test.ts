@@ -3,7 +3,7 @@ import { CalibrationRepository } from '@domain/repositories/CalibrationRepositor
 import { ISessionRepository } from '@domain/repositories/SessionRepository';
 import { IAnalyticsService } from '@core/analytics/AnalyticsService';
 import { ANALYTICS_CONSTANTS } from '@core/config/constants';
-import { CourtCalibration, CourtLineType } from '@domain/entities/CourtCalibration';
+import { CourtCalibration } from '@domain/entities/CourtCalibration';
 import { Session, SessionStatus } from '@domain/entities/Session';
 import { success, failure } from '@core/utils/result';
 import { StorageError, NotFoundError } from '@core/errors/AppError';

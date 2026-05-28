@@ -1,25 +1,24 @@
-import { Result } from '@core/utils/result';
-import { AppError } from '@core/errors/AppError';
-import { CourtCalibration } from '../entities/CourtCalibration';
-import { CalibrationRepository } from '../repositories/CalibrationRepository';
-import { ISessionRepository } from '../repositories/SessionRepository';
-import { IAnalyticsService } from '@core/analytics/AnalyticsService';
+import { injectable, inject } from 'tsyringe';
+import type { Result } from '@core/utils/result';
+import type { AppError } from '@core/errors/AppError';
+import type { CourtCalibration } from '../entities/CourtCalibration';
+import type { CalibrationRepository } from '../repositories/CalibrationRepository';
+import type { ISessionRepository } from '../repositories/SessionRepository';
+import type { IAnalyticsService } from '@core/analytics/AnalyticsService';
 import { ANALYTICS_CONSTANTS } from '@core/config/constants';
+import { DI_TOKENS } from '@core/di/container';
 import { failure } from '@core/utils/result';
 
-/**
- * Input for SaveCalibration use case
- */
 export type SaveCalibrationInput = Omit<CourtCalibration, 'id' | 'createdAt' | 'updatedAt'>;
 
-/**
- * SaveCalibration Use Case
- * Saves court calibration for a session
- */
+@injectable()
 export class SaveCalibration {
   constructor(
+    @inject(DI_TOKENS.CalibrationRepository)
     private readonly calibrationRepository: CalibrationRepository,
+    @inject(DI_TOKENS.SessionRepository)
     private readonly sessionRepository: ISessionRepository,
+    @inject(DI_TOKENS.AnalyticsService)
     private readonly analyticsService: IAnalyticsService,
   ) {}
 

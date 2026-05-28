@@ -3,7 +3,11 @@ import { NotFoundError, StorageError } from '@core/errors/AppError';
 import { CourtCalibration } from '@domain/entities/CourtCalibration';
 import type { CalibrationRepository as ICalibrationRepository } from '@domain/repositories/CalibrationRepository';
 import { CalibrationLocalDataSource } from '../datasources/local/CalibrationLocalDataSource';
-import { calibrationFromDTO, calibrationToDTO } from '../mappers/calibrationMapper';
+import {
+  calibrationFromDTO,
+  calibrationToDTO,
+  calibrationPartialToDTO,
+} from '../mappers/calibrationMapper';
 import { getCurrentISOString } from '@core/utils/date';
 
 export class CalibrationRepository implements ICalibrationRepository {
@@ -42,9 +46,7 @@ export class CalibrationRepository implements ICalibrationRepository {
     }
   }
 
-  async getBySessionId(
-    sessionId: string,
-  ): Promise<Result<CourtCalibration | null, StorageError>> {
+  async getBySessionId(sessionId: string): Promise<Result<CourtCalibration | null, StorageError>> {
     try {
       const dto = await this.localDataSource.getBySessionId(sessionId);
       if (!dto) return success(null);
@@ -59,7 +61,7 @@ export class CalibrationRepository implements ICalibrationRepository {
     updates: Partial<CourtCalibration>,
   ): Promise<Result<CourtCalibration, StorageError>> {
     try {
-      const partialDto = calibrationToDTO(updates as CourtCalibration);
+      const partialDto = calibrationPartialToDTO(updates);
       const updated = await this.localDataSource.update(id, partialDto);
       if (!updated) {
         return failure(new NotFoundError('Calibration not found', 'calibration'));

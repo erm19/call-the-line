@@ -1,17 +1,40 @@
-import { eq } from 'drizzle-orm';
+import { z } from 'zod';
+import { desc, eq } from 'drizzle-orm';
 import type { DbClient } from '../../db/client';
 import { calibrations } from '../../db/schema';
 import { CalibrationDTO } from '../../models/CalibrationDTO';
 
 type CalibrationRow = typeof calibrations.$inferSelect;
 
+const point2DSchema = z.object({ x: z.number(), y: z.number() });
+const cornerPointsSchema = z.array(point2DSchema);
+const linesSchema = z.array(z.object({ type: z.string(), points: z.array(point2DSchema) }));
+const matrixSchema = z.array(z.number());
+type CameraParams = CalibrationDTO['camera_params'];
+const cameraParamsSchema: z.ZodType<CameraParams> = z.object({
+  focal_length: z.number().optional(),
+  principal_point: point2DSchema.optional(),
+  distortion: z.array(z.number()).optional(),
+}) as z.ZodType<CameraParams>;
+
+const parseJson = <T>(raw: string, schema: z.ZodType<T>, fallback: T): T => {
+  try {
+    const result = schema.safeParse(JSON.parse(raw));
+    return result.success ? result.data : fallback;
+  } catch {
+    return fallback;
+  }
+};
+
 const rowToDTO = (row: CalibrationRow): CalibrationDTO => ({
   id: row.id,
   session_id: row.sessionId,
-  corner_points: JSON.parse(row.cornerPoints),
-  lines: JSON.parse(row.lines),
-  transformation_matrix: row.transformationMatrix ? JSON.parse(row.transformationMatrix) : [],
-  camera_params: JSON.parse(row.cameraParams),
+  corner_points: parseJson(row.cornerPoints, cornerPointsSchema, []),
+  lines: parseJson(row.lines, linesSchema, []),
+  transformation_matrix: row.transformationMatrix
+    ? parseJson(row.transformationMatrix, matrixSchema, [])
+    : [],
+  camera_params: parseJson(row.cameraParams, cameraParamsSchema, {}),
   confidence: row.confidence,
   is_valid: row.isValid,
   created_at: row.createdAt.toISOString(),
@@ -37,13 +60,11 @@ const partialDtoToSet = (
   const set: Partial<typeof calibrations.$inferInsert> = {};
   set.updatedAt = new Date();
   if (updates.session_id !== undefined) set.sessionId = updates.session_id;
-  if (updates.corner_points !== undefined)
-    set.cornerPoints = JSON.stringify(updates.corner_points);
+  if (updates.corner_points !== undefined) set.cornerPoints = JSON.stringify(updates.corner_points);
   if (updates.lines !== undefined) set.lines = JSON.stringify(updates.lines);
   if (updates.transformation_matrix !== undefined)
     set.transformationMatrix = JSON.stringify(updates.transformation_matrix);
-  if (updates.camera_params !== undefined)
-    set.cameraParams = JSON.stringify(updates.camera_params);
+  if (updates.camera_params !== undefined) set.cameraParams = JSON.stringify(updates.camera_params);
   if (updates.confidence !== undefined) set.confidence = updates.confidence;
   if (updates.is_valid !== undefined) set.isValid = updates.is_valid;
   return set;
@@ -53,10 +74,7 @@ export class CalibrationLocalDataSource {
   constructor(private readonly db: DbClient) {}
 
   async create(calibration: CalibrationDTO): Promise<CalibrationDTO> {
-    const rows = await this.db
-      .insert(calibrations)
-      .values(dtoToInsert(calibration))
-      .returning();
+    const rows = await this.db.insert(calibrations).values(dtoToInsert(calibration)).returning();
     if (!rows.length) return calibration;
     return rowToDTO(rows[0]);
   }
@@ -77,7 +95,8 @@ export class CalibrationLocalDataSource {
     const rows = await this.db
       .select()
       .from(calibrations)
-      .where(eq(calibrations.sessionId, sessionId));
+      .where(eq(calibrations.sessionId, sessionId))
+      .orderBy(desc(calibrations.updatedAt));
     if (!Array.isArray(rows) || rows.length === 0) return null;
     return rowToDTO(rows[0]);
   }

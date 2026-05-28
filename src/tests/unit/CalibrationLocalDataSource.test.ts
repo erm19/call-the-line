@@ -127,7 +127,9 @@ describe('CalibrationLocalDataSource', () => {
 
       db.select.mockReturnValue({
         from: jest.fn().mockReturnValue({
-          where: jest.fn().mockResolvedValue([dbRow]),
+          where: jest.fn().mockReturnValue({
+            orderBy: jest.fn().mockResolvedValue([dbRow]),
+          }),
         }),
       });
 
@@ -140,7 +142,9 @@ describe('CalibrationLocalDataSource', () => {
     it('returns null when no calibration exists for session', async () => {
       db.select.mockReturnValue({
         from: jest.fn().mockReturnValue({
-          where: jest.fn().mockResolvedValue([]),
+          where: jest.fn().mockReturnValue({
+            orderBy: jest.fn().mockResolvedValue([]),
+          }),
         }),
       });
 
