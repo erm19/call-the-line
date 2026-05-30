@@ -9,7 +9,7 @@ import { typography } from '../../theme/typography';
  * Handles video recording and NRT processing
  * TODO: Integrate with CameraService and NRTCameraService
  */
-const CameraScreen: React.FC = () => {
+export const CameraScreen: React.FC = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.placeholder}>Camera View Placeholder</Text>
@@ -36,5 +36,3 @@ const styles = StyleSheet.create({
     color: colors.textSecondary,
   },
 });
-
-export default CameraScreen;

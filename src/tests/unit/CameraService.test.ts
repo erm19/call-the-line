@@ -192,9 +192,9 @@ describe('CameraService', () => {
       await service.initialize(makeConfig());
       await service.startRecording();
 
-      jest.spyOn(service, 'stopRecording').mockResolvedValueOnce(
-        failure(new CameraError('Stop failed')),
-      );
+      jest
+        .spyOn(service, 'stopRecording')
+        .mockResolvedValueOnce(failure(new CameraError('Stop failed')));
 
       const result = await service.release();
 
