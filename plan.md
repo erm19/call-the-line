@@ -105,17 +105,17 @@ Goal: user can record a clip and it's saved to the session.
 - [x] **2.2** Implement `CameraService` — start/stop standard recording using vision-camera, return file path
 - [x] **2.3** Implement `FileStorageService` — save/delete/list clip files in app-private storage
 - [x] **2.4** Implement `RecordClip` use case body — orchestrate CameraService + ClipRepository
-- [ ] **2.5** Implement `ClipLocalDataSource` — Drizzle CRUD on `clips` table; include `findBySessionId` query
-- [ ] **2.6** Implement `ClipRepositoryImpl` — wire local data source + file storage, map Drizzle rows ↔ entities
-- [ ] **2.7** Create `CameraViewModel.ts` — recording state machine: idle → recording → saving → done
-- [ ] **2.8** Implement `CameraScreen.tsx` — vision-camera preview, record button, permission denied state
+- [x] **2.5** Implement `ClipLocalDataSource` — Drizzle CRUD on `clips` table; include `findBySessionId` query
+- [x] **2.6** Implement `ClipRepositoryImpl` — wire local data source + file storage, map Drizzle rows ↔ entities
+- [x] **2.7** Create `CameraViewModel.ts` — recording state machine: idle → recording → saving → done
+- [x] **2.8** Implement `CameraScreen.tsx` — vision-camera preview, record button, permission denied state
 - [x] **2.9** Add permission-denied educative screen with "Open Settings" deep link
-- [ ] **2.10** Lock orientation to landscape in camera screen
+- [x] **2.10** Lock orientation to landscape in camera screen
 - [x] **2.11** Add `VideoPlayer` component for clip playback
 - [x] **2.12** Add i18n keys for camera UI strings
 - [x] **2.13** Unit tests: RecordClip use case
-- [ ] **2.14** Unit tests: CameraViewModel state transitions
-- [ ] **2.15** Integration test: `ClipRepositoryImpl` — in-memory SQLite
+- [x] **2.14** Unit tests: CameraViewModel state transitions
+- [x] **2.15** Integration test: `ClipRepositoryImpl` — in-memory SQLite
 
 ---
 
@@ -123,16 +123,16 @@ Goal: user can record a clip and it's saved to the session.
 
 Goal: user can calibrate court geometry once per session; it persists.
 
-- [ ] **3.1** Implement `CalibrationLocalDataSource` — Drizzle CRUD on `calibrations` table; `findBySessionId` query
-- [ ] **3.2** Implement `CalibrationRepositoryImpl` — wire local data source, map Drizzle rows ↔ entities
-- [ ] **3.3** Implement `SaveCalibration` use case body — validate + persist calibration
+- [x] **3.1** Implement `CalibrationLocalDataSource` — Drizzle CRUD on `calibrations` table; `findBySessionId` query
+- [x] **3.2** Implement `CalibrationRepositoryImpl` — wire local data source, map Drizzle rows ↔ entities
+- [x] **3.3** Implement `SaveCalibration` use case body — validate + persist calibration
 - [x] **3.4** Create `CourtOverlay` component — SVG overlay showing court lines and calibration points
-- [ ] **3.5** Create calibration screen — tap-to-place 4 court corner points on live camera preview
-- [ ] **3.6** Create `CalibrationViewModel.ts` — track point placement state, validate 4-point input
-- [ ] **3.7** Wire calibration into Camera flow — prompt on first session start if not calibrated
+- [x] **3.5** Create calibration screen — tap-to-place 4 court corner points on live camera preview
+- [x] **3.6** Create `CalibrationViewModel.ts` — track point placement state, validate 4-point input
+- [x] **3.7** Wire calibration into Camera flow — prompt on first session start if not calibrated
 - [x] **3.8** Add i18n keys for calibration UI
-- [ ] **3.9** Unit tests: SaveCalibration use case
-- [ ] **3.10** Unit tests: CalibrationViewModel
+- [x] **3.9** Unit tests: SaveCalibration use case
+- [x] **3.10** Unit tests: CalibrationViewModel
 
 ---
 

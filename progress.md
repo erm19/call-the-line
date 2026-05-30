@@ -10,9 +10,9 @@ End-of-session instructions:
 
 ## Current Status
 
-**Phase:** Phase 1–2 — Wave 2 complete; 26 tasks done
+**Phase:** Phase 2–3 — Wave 3 complete; 41 tasks done
 
-**Next task:** Wave 3 — merge all Wave 2 branches into main, then run `/implement-task wave` again
+**Next task:** Wave 4 — merge all Wave 3 branches into main, then run `/implement-task wave` again
 
 ---
 
@@ -137,6 +137,49 @@ End-of-session instructions:
 > Merge all Wave 2 branches into main, then run `/implement-task wave` for Wave 3.
 > Wave 3 branches: feat/clip-data-layer (needs db-foundation + camera-core), feat/camera-ui (needs camera-core + platform-services), feat/calibration-data (needs db-foundation), feat/calibration-ui (needs standalone-ui CourtOverlay).
 > IMPORTANT: When merging feat/session-list-detail and feat/session-store, both add sessionStore.ts — keep the feat/session-store version which has the addItem() method.
+
+---
+
+### Session 5 — 2026-05-29
+
+**Wave:** Wave 3 — branches: feat/clip-data-layer, feat/camera-ui, feat/calibration-data, feat/calibration-ui
+
+**Done:**
+- Task 2.5: ClipLocalDataSource — full Drizzle CRUD with Zod validation for resolution JSON field; throws on empty `.returning()` (branch: feat/clip-data-layer)
+- Task 2.6: ClipRepositoryImpl — wires LocalDataSource + ClipStorageService; DB-first delete ordering (branch: feat/clip-data-layer)
+- Task 2.7: CameraViewModel.ts — recording state machine (idle→recording→saving→done), clears error on state transitions (branch: feat/camera-ui)
+- Task 2.8: CameraScreen.tsx — vision-camera preview placeholder, record/stop/retry button, sessionId guard, Error state handling (branch: feat/camera-ui)
+- Task 2.10: Landscape orientation locked in CameraScreen (branch: feat/camera-ui)
+- Task 2.14: CameraViewModel.test.ts — state machine transition tests (branch: feat/camera-ui)
+- Task 2.15: ClipRepositoryImpl.test.ts — integration tests including delete-order and best-effort file delete (branch: feat/clip-data-layer)
+- Task 3.1: CalibrationLocalDataSource — Drizzle CRUD with Zod validation for JSON fields (corner_points, lines, transformation_matrix, camera_params); getBySessionId ordered by updatedAt desc (branch: feat/calibration-data)
+- Task 3.2: CalibrationRepositoryImpl — wires LocalDataSource, uses calibrationPartialToDTO for safe partial updates (branch: feat/calibration-data)
+- Task 3.3: SaveCalibration use case — validates session exists, persists calibration, tracks analytics; @injectable() + import type for isolatedModules (branch: feat/calibration-data)
+- Task 3.5: CalibrationScreen.tsx — tap-to-place 4 corner points on CourtOverlay, store reset on mount (branch: feat/calibration-ui)
+- Task 3.6: CalibrationViewModel.ts — addPoint/removeLastPoint, isFourPoints type predicate, saveCalibration delegates to SaveCalibration use case (branch: feat/calibration-ui)
+- Task 3.7: Calibration wired into AppNavigator; CameraScreen navigates to CalibrationScreen (branch: feat/calibration-ui)
+- Task 3.9: SaveCalibration.test.ts — 7 unit tests covering validation, persistence, analytics (branch: feat/calibration-data)
+- Task 3.10: CalibrationViewModel.test.ts — 7 unit tests covering addPoint, removeLastPoint, saveCalibration (branch: feat/calibration-ui)
+- CalibrationRepositoryImpl.test.ts — new integration test suite (branch: feat/calibration-data)
+- Review fixes applied across all 4 branches after wave implementation
+
+**Key decisions:**
+- `calibrationPartialToDTO` mapper added to avoid unsafe `calibrationToDTO(updates as CourtCalibration)` cast in repository update — only maps defined fields
+- DB-first delete in ClipRepository (DB is authoritative; file delete is best-effort with `.catch(() => undefined)`)
+- `isFourPoints` type predicate replaces `cornerPoints as [Point2D, ...]` cast in CalibrationViewModel — TypeScript understands the narrowing correctly
+- `import type` required for constructor parameter types in `@injectable()` classes (TS1272 with isolatedModules + emitDecoratorMetadata)
+- `useCalibrationStore.getState().reset()` called in CalibrationScreen `useEffect` on mount to clear stale state between sessions
+- `removeLastPoint` in calibrationStore now recomputes `isComplete` from `next.length` (was hardcoded to `false`)
+- `App.tsx` needs `export default App` — index.js uses default import (exception to no-default-export rule)
+- CalibrationScreen lives on feat/calibration-ui; AppNavigator on feat/camera-ui does NOT include it (avoids cross-branch coupling)
+
+**Blockers / open questions:**
+- none
+
+**Next session start point:**
+> Merge all Wave 3 branches into main, then run `/implement-task wave` for Wave 4.
+> Wave 3 branches: feat/clip-data-layer, feat/camera-ui, feat/calibration-data, feat/calibration-ui.
+> Check plan.md for Wave 4 definition (not yet scheduled — depends on what unblocks after Wave 3 merges).
 
 ---
 
