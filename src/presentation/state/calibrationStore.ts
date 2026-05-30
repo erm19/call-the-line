@@ -40,7 +40,7 @@ export const useCalibrationStore = create<CalibrationStoreState>(set => ({
   removeLastPoint: () =>
     set(state => {
       const next = state.cornerPoints.slice(0, -1);
-      return { cornerPoints: next, isComplete: false };
+      return { cornerPoints: next, isComplete: next.length === MAX_CORNER_POINTS };
     }),
   setIsSubmitting: (isSubmitting: boolean) => set({ isSubmitting }),
   setError: (error: string | null) => set({ error }),

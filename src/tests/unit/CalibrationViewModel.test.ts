@@ -2,7 +2,6 @@ import { CalibrationViewModel } from '@presentation/screens/Camera/CalibrationVi
 import { useCalibrationStore } from '@presentation/state/calibrationStore';
 import { SaveCalibration } from '@domain/useCases/SaveCalibration';
 import { CourtCalibration } from '@domain/entities/CourtCalibration';
-import { Session, SessionStatus } from '@domain/entities/Session';
 import { success, failure } from '@core/utils/result';
 import { StorageError, ValidationError } from '@core/errors/AppError';
 
@@ -33,9 +32,7 @@ describe('CalibrationViewModel', () => {
   beforeEach(() => {
     useCalibrationStore.getState().reset();
     mockSaveCalibration = { execute: jest.fn() };
-    viewModel = new CalibrationViewModel(
-      mockSaveCalibration as unknown as SaveCalibration,
-    );
+    viewModel = new CalibrationViewModel(mockSaveCalibration as unknown as SaveCalibration);
   });
 
   describe('addPoint', () => {
@@ -70,21 +67,6 @@ describe('CalibrationViewModel', () => {
     it('does nothing when there are no points', () => {
       viewModel.removeLastPoint();
       expect(useCalibrationStore.getState().cornerPoints).toHaveLength(0);
-    });
-  });
-
-  describe('isReadyToSave', () => {
-    it('returns false when fewer than 4 points', () => {
-      viewModel.addPoint(10, 10);
-      expect(viewModel.isReadyToSave()).toBe(false);
-    });
-
-    it('returns true when exactly 4 points are placed', () => {
-      viewModel.addPoint(0, 0);
-      viewModel.addPoint(100, 0);
-      viewModel.addPoint(100, 100);
-      viewModel.addPoint(0, 100);
-      expect(viewModel.isReadyToSave()).toBe(true);
     });
   });
 

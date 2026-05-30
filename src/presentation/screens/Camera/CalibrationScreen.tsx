@@ -1,12 +1,5 @@
-import React, { useRef, useCallback } from 'react';
-import {
-  View,
-  Text,
-  Pressable,
-  StyleSheet,
-  StatusBar,
-  useWindowDimensions,
-} from 'react-native';
+import React, { useRef, useCallback, useEffect } from 'react';
+import { View, Text, Pressable, StyleSheet, StatusBar, useWindowDimensions } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
 import { RootStackParamList, Routes } from '../../navigation/types';
@@ -41,6 +34,10 @@ export const CalibrationScreen: React.FC<CalibrationScreenProps> = ({ navigation
     viewModelRef.current = new CalibrationViewModel(saveCalibration);
   }
   const viewModel = viewModelRef.current;
+
+  useEffect(() => {
+    useCalibrationStore.getState().reset();
+  }, []);
 
   const handlePointTap = useCallback(
     (x: number, y: number) => {

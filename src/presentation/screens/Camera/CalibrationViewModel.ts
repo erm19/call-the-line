@@ -6,6 +6,9 @@ import { useCalibrationStore } from '@presentation/state/calibrationStore';
 
 const MAX_POINTS = 4;
 
+const isFourPoints = (pts: Point2D[]): pts is [Point2D, Point2D, Point2D, Point2D] =>
+  pts.length === MAX_POINTS;
+
 export class CalibrationViewModel {
   constructor(private readonly saveCalibrationUseCase: SaveCalibration) {}
 
@@ -19,25 +22,21 @@ export class CalibrationViewModel {
     useCalibrationStore.getState().removeLastPoint();
   }
 
-  isReadyToSave(): boolean {
-    return useCalibrationStore.getState().cornerPoints.length === MAX_POINTS;
-  }
-
   async saveCalibration(sessionId: string): Promise<Result<CourtCalibration, AppError>> {
     const { cornerPoints, setIsSubmitting, setError } = useCalibrationStore.getState();
+    setError(null);
 
-    if (cornerPoints.length !== MAX_POINTS) {
+    if (!isFourPoints(cornerPoints)) {
       return failure(
         new ValidationError('Place all 4 corner points before saving', 'cornerPoints'),
       );
     }
 
     setIsSubmitting(true);
-    setError(null);
 
     const result = await this.saveCalibrationUseCase.execute({
       sessionId,
-      cornerPoints: cornerPoints as [Point2D, Point2D, Point2D, Point2D],
+      cornerPoints,
       lines: [],
       transformationMatrix: [],
       cameraParams: {},
