@@ -9,11 +9,11 @@ type ClipRow = typeof clips.$inferSelect;
 const resolutionSchema = z.object({ width: z.number(), height: z.number() });
 
 const parseResolution = (raw: string): { width: number; height: number } => {
-  try {
-    return resolutionSchema.parse(JSON.parse(raw));
-  } catch {
-    return { width: 0, height: 0 };
+  const result = resolutionSchema.safeParse(JSON.parse(raw));
+  if (!result.success) {
+    throw new Error(`Malformed resolution in clip record: ${raw}`);
   }
+  return result.data;
 };
 
 const rowToDTO = (row: ClipRow): ClipDTO => ({
@@ -69,7 +69,7 @@ export class ClipLocalDataSource {
 
   async create(clip: ClipDTO): Promise<ClipDTO> {
     const rows = await this.db.insert(clips).values(dtoToInsert(clip)).returning();
-    if (!rows.length) return clip;
+    if (!rows.length) throw new Error('Clip insert returned no rows');
     return rowToDTO(rows[0]);
   }
 

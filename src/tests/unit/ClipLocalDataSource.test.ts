@@ -79,7 +79,7 @@ describe('ClipLocalDataSource', () => {
       expect(result.resolution).toEqual({ width: 1920, height: 1080 });
     });
 
-    it('returns the original DTO when returning is empty', async () => {
+    it('throws when returning is empty (signals a DB error)', async () => {
       const dto = makeDTO();
 
       db.insert.mockReturnValue({
@@ -88,9 +88,7 @@ describe('ClipLocalDataSource', () => {
         }),
       });
 
-      const result = await dataSource.create(dto);
-
-      expect(result).toBe(dto);
+      await expect(dataSource.create(dto)).rejects.toThrow('Clip insert returned no rows');
     });
   });
 

@@ -178,7 +178,7 @@ describe('ClipRepository (integration)', () => {
   });
 
   describe('delete', () => {
-    it('calls clipStorageService.deleteClip with the video path', async () => {
+    it('calls clipStorageService.deleteClip with the video path after DB delete', async () => {
       const createResult = await repository.create(makeClipInput());
       expect(createResult.isSuccess).toBe(true);
 
@@ -195,8 +195,62 @@ describe('ClipRepository (integration)', () => {
       });
 
       if (createResult.isSuccess) {
+        const callOrder: string[] = [];
+        (db.delete as jest.Mock).mockImplementation(() => ({
+          where: jest.fn(() => ({
+            returning: jest.fn(async () => {
+              callOrder.push('db_delete');
+              return [storedRow];
+            }),
+          })),
+        }));
+        clipStorage.deleteClip.mockImplementation(async () => {
+          callOrder.push('file_delete');
+          return success(undefined);
+        });
+
         await repository.delete(createResult.value.id);
+
+        expect(callOrder).toEqual(['db_delete', 'file_delete']);
         expect(clipStorage.deleteClip).toHaveBeenCalledWith(createResult.value.videoPath);
+      }
+    });
+
+    it('returns NotFoundError when clip does not exist', async () => {
+      db.select.mockReturnValue({
+        from: jest.fn(() => ({
+          where: jest.fn().mockResolvedValue([]),
+        })),
+      });
+
+      const result = await repository.delete('nonexistent');
+      expect(result.isFailure).toBe(true);
+      if (result.isFailure) {
+        expect(result.error.message).toMatch(/not found/i);
+      }
+      expect(clipStorage.deleteClip).not.toHaveBeenCalled();
+    });
+
+    it('still returns success when file delete fails (best-effort)', async () => {
+      const createResult = await repository.create(makeClipInput());
+      expect(createResult.isSuccess).toBe(true);
+
+      const storedRow = [...db._store.values()][0];
+      db.select.mockReturnValue({
+        from: jest.fn(() => ({
+          where: jest.fn().mockResolvedValue([storedRow]),
+        })),
+      });
+      db.delete.mockReturnValue({
+        where: jest.fn(() => ({
+          returning: jest.fn().mockResolvedValue([storedRow]),
+        })),
+      });
+      clipStorage.deleteClip.mockRejectedValue(new Error('File system error'));
+
+      if (createResult.isSuccess) {
+        const result = await repository.delete(createResult.value.id);
+        expect(result.isSuccess).toBe(true);
       }
     });
   });

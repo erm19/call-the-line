@@ -77,13 +77,14 @@ export class ClipRepository implements IClipRepository {
         return failure(new NotFoundError('Clip not found', 'clip'));
       }
 
-      // Best-effort file deletion — swallow errors since the DB delete is authoritative
-      await this.clipStorageService.deleteClip(dto.video_path).catch(() => undefined);
-
       const deleted = await this.localDataSource.delete(id);
       if (!deleted) {
         return failure(new NotFoundError('Clip not found', 'clip'));
       }
+
+      // Best-effort file deletion after DB delete — swallow errors so the DB result is authoritative
+      await this.clipStorageService.deleteClip(dto.video_path).catch(() => undefined);
+
       return success(undefined);
     } catch (error) {
       return failure(new StorageError('Failed to delete clip'));
@@ -94,12 +95,13 @@ export class ClipRepository implements IClipRepository {
     try {
       const dtos = await this.localDataSource.getBySessionId(sessionId);
 
-      // Best-effort file deletion for each clip
+      await this.localDataSource.deleteBySessionId(sessionId);
+
+      // Best-effort file deletion after DB delete
       await Promise.all(
         dtos.map(dto => this.clipStorageService.deleteClip(dto.video_path).catch(() => undefined)),
       );
 
-      await this.localDataSource.deleteBySessionId(sessionId);
       return success(undefined);
     } catch (error) {
       return failure(new StorageError('Failed to delete clips'));
